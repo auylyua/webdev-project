@@ -1,59 +1,25 @@
-# ReadingProgressTracker
+Reading Progress Tracker
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+Project Overview 
+Reading Progress Tracker is a web application designed to help users organize their personal library, track their reading habits, and monitor their progress through various books. The project is built using Angular for the frontend and Django REST Framework (DRF) for the backend.
 
-## Development server
+Group Members
+As per the course requirements, our group consists of 2 members from the same practice lesson:
+1) Adina Nurbergenova — Full-stack Developer
+2) Fazylbek Assylzat — Full-stack Developer
 
-To start a local development server, run:
+Key Features (Requirements Coverage)
+This project implements the following technical requirements:
+Frontend (Angular): JWT authentication (login/logout), at least 3 named routes, and interactive services using HttpClient.
+Backend (Django): 4+ models with ForeignKey relationships, CRUD operations, and Token-based authentication.
+API Management: A full Postman collection is included in the repository for testing.
 
-```bash
-ng serve
-```
+How to Run
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+1) Backend: * Install dependencies: pip install -r requirements.txt
+-Run migrations: python manage.py migrate
+-Start server: python manage.py runserver
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+2) Frontend:
+-Install dependencies: npm install
+-Start dev server: ng serve
