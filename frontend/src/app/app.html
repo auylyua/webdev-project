@@ -13,7 +13,7 @@
 
     <div class="user-footer">
       <div *ngIf="!isLoggedIn; else userInfo">
-        <button class="btn-auth" (click)="login()">Sign In</button>
+        <button class="btn-auth" routerLink="/login">Sign In</button>
       </div>
       <ng-template #userInfo>
         <div class="user-row">
