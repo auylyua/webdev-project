@@ -13,3 +13,4 @@ export const routes: Routes = [
   { path: 'profile', component: Profile },
   { path: 'collections', component: Collections },
 ];
+
