@@ -17,7 +17,8 @@ class ReadingEntry(models.Model):
         ('planned', 'Planned'),
         ('reading', 'Reading'),
         ('finished', 'Finished'),
-    ]
+        ('dropped', 'Dropped'),
+]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reading_entries')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reading_entries')

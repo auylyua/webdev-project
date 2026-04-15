@@ -523,7 +523,7 @@
           "bearer": [
             {
               "key": "token",
-              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc1MzE2MTc4LCJpYXQiOjE3NzUzMTI1NzgsImp0aSI6IjA1ODljMGRlZmQ1ODRhMzc5MGFiYjhlNWE3YTcyNDY4IiwidXNlcl9pZCI6IjIifQ.mQxLkXSBoyZ42tfFwrVQLh1ZkTBxJZYekI69KDlitiI",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc1NDA5NzU2LCJpYXQiOjE3NzU0MDYxNTYsImp0aSI6Ijk0ODlkMDllMTgyMDRhYzRhYTUzYzhjYWFkNWM0MDBlIiwidXNlcl9pZCI6IjIifQ.vo52waUAfYR1k8EsPdFUTV6OE1803L7OrCdNqPA6Ahk",
               "type": "string"
             }
           ]
@@ -532,7 +532,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}",
+          "raw": "{\r\n    \"refresh\": \"<eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc3NTQ5MjU1NiwiaWF0IjoxNzc1NDA2MTU2LCJqdGkiOiIzOTFhYTg5ZTM4Nzc0NWU1ODcxOWNiNTEyMjM5ZWU0NCIsInVzZXJfaWQiOiIyIn0.enEf7ctsMXRSxHUEpeEM-RXL2YoB7Nli6GGJguw0y4c>\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
