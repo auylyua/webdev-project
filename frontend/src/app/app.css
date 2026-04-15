@@ -2,16 +2,22 @@
   display: grid;
   grid-template-columns: 240px 1fr; 
   height: 100vh;
-  background-color: #1a1a1a;
+  background-color: #F8FAFA;
   color: white;
 }
 
 .sidebar {
-  background-color: #111;
+  background-color: #181c1b;
+  border-right: 1px solid #e0e6e4;
   padding: 20px;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid #333;
+}
+.sidebar h2 {
+  color: #7ca99a; /* Логотип в основном цвете бренда */
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  margin-bottom: 30px;
 }
 
 
@@ -48,7 +54,7 @@
 
 
 .btn-auth {
-  background-color: #7ca99a; 
+  background-color: #0d0e0e; 
   color: white;
   border: none;
   padding: 12px 20px;
@@ -64,3 +70,11 @@
 .btn-auth:hover {
   background-color: #6a9285;
 }
+
+.content-area{
+  flex: 1;
+  background-color: #ffffff;
+  color: #2c3e3a;
+  overflow-y: auto;
+}
+
