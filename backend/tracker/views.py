@@ -53,15 +53,18 @@ def login_view(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
+    # На бэкенде JWT обычно не инвалидируется принудительно без Blacklist.
+    # Фронтенд просто удаляет токен из localStorage.
     return Response(
         {'message': 'Logout successful (client should delete token)'},
         status=status.HTTP_200_OK
     )
 
 
+# --- BOOK VIEWS ---
 
 class BookListCreateAPIView(APIView):
-    # Изменено с IsAuthenticated на AllowAny, чтобы фронтенд увидел данные без логина
+    # Доступно всем, чтобы пользователи видели каталог без логина
     permission_classes = [AllowAny] 
 
     def get(self, request):
@@ -76,12 +79,14 @@ class BookListCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# --- ДРУГИЕ API (ОСТАВЛЕНЫ С АВТОРИЗАЦИЕЙ) ---
+
+# --- READING PROGRESS VIEWS ---
 
 class ReadingEntryListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        # Показываем записи только текущего пользователя
         entries = ReadingEntry.objects.filter(user=request.user).order_by('-id')
         serializer = ReadingEntrySerializer(entries, many=True)
         return Response(serializer.data)
@@ -89,6 +94,7 @@ class ReadingEntryListCreateAPIView(APIView):
     def post(self, request):
         serializer = ReadingEntrySerializer(data=request.data)
         if serializer.is_valid():
+            # Важно: привязываем запись к юзеру из токена
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -110,23 +116,16 @@ class ReadingEntryDetailAPIView(APIView):
         serializer = ReadingEntrySerializer(entry)
         return Response(serializer.data)
 
-    def put(self, request, pk):
-        entry = self.get_object(pk, request.user)
-        if not entry:
-            return Response({'error': 'Reading entry not found.'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = ReadingEntrySerializer(entry, data=request.data)
-        if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     def patch(self, request, pk):
+        """Метод для частичного обновления (например, только текущей страницы)"""
         entry = self.get_object(pk, request.user)
         if not entry:
             return Response({'error': 'Reading entry not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Используем partial=True, чтобы не требовать все поля при обновлении
         serializer = ReadingEntrySerializer(entry, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -137,6 +136,8 @@ class ReadingEntryDetailAPIView(APIView):
         entry.delete()
         return Response({'message': 'Reading entry deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
 
+
+# --- NOTES & REVIEWS VIEWS ---
 
 class NoteListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
