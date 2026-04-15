@@ -16,6 +16,7 @@ from .serializers import (
     RegisterSerializer,
 )
 
+# --- AUTH VIEWS ---
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -58,8 +59,10 @@ def logout_view(request):
     )
 
 
+
 class BookListCreateAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    # Изменено с IsAuthenticated на AllowAny, чтобы фронтенд увидел данные без логина
+    permission_classes = [AllowAny] 
 
     def get(self, request):
         books = Book.objects.all().order_by('-created_at')
@@ -73,6 +76,7 @@ class BookListCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# --- ДРУГИЕ API (ОСТАВЛЕНЫ С АВТОРИЗАЦИЕЙ) ---
 
 class ReadingEntryListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
