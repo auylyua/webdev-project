@@ -1,53 +1,111 @@
+/* Основной контейнер */
 .page-container {
   display: flex;
   height: 100vh;
+  width: 100%;
   font-family: 'Inter', sans-serif;
+  overflow: hidden;
 }
 
+/* --- ЛЕВАЯ СЕКЦИЯ (АВТОРИЗАЦИЯ) --- */
 .auth-section {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
   background: white;
-}
-
-.info-section {
-  flex: 1;
-  background-color: #7ca99a; /* Тот самый цвет из референса */
-  color: white;
-  display: flex;
-  align-items: center;
-  padding: 60px;
+  padding: 40px;
 }
 
 .auth-box {
   width: 100%;
   max-width: 400px;
-  text-align: center;
 }
 
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo {
+  height: 45px;
+  margin-bottom: 10px;
+}
+
+.tagline {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+/* Переключатель вкладок */
 .tab-switcher {
   display: flex;
   background: #f3f4f6;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 4px;
-  margin: 20px 0;
+  margin-bottom: 30px;
 }
 
 .tab-switcher button {
   flex: 1;
   border: none;
-  padding: 10px;
-  border-radius: 6px;
+  padding: 12px;
+  border-radius: 10px;
   cursor: pointer;
   background: none;
-  font-weight: 500;
+  font-weight: 600;
+  color: #6b7280;
+  transition: all 0.3s ease;
 }
 
 .tab-switcher button.active {
   background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: #1a1f1e;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Форма */
+.form-content h2 {
+  color: #000000; /* Четкий черный заголовок */
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.subtitle {
+  color: #4b5563; /* Темно-серый подзаголовок */
+  font-size: 15px;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1f1e;
+  margin-bottom: 6px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  color: #000000;
+  transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+  outline: none;
+  border-color: #7ca99a;
 }
 
 .main-btn {
@@ -55,22 +113,93 @@
   background: #7ca99a;
   color: white;
   border: none;
-  padding: 12px;
+  padding: 14px;
   border-radius: 8px;
   font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+
+.main-btn:hover {
+  background: #6b9487;
+}
+
+.footer-links {
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.footer-links a {
+  color: #7ca99a;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-links p {
+  color: #6b7280;
   margin-top: 15px;
 }
 
-.input-group {
-  text-align: left;
-  margin-bottom: 15px;
+.footer-links span {
+  color: #7ca99a;
+  cursor: pointer;
+  font-weight: 700;
 }
 
-.input-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  margin-top: 5px;
+/* --- ПРАВАЯ СЕКЦИЯ (ИНФО) --- */
+.info-section {
+  flex: 1;
+  background-color: #7ca99a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
 }
+
+.info-content {
+  max-width: 500px;
+}
+
+.info-content h1 {
+  color: #1a2e2a; /* Очень темный хвойный для контраста */
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 25px;
+}
+
+.info-content p {
+  color: #ffffff; /* Белый текст на зеленом фоне */
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 40px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.icon {
+  font-size: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 15px;
+  border-radius: 16px;
+}
+
+.feature-item strong {
+  color: #1a2e2a; /* Заголовок фичи — темный */
+  font-size: 18px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.feature-item p {
+  color: #f0fdf4; /* Светло-мятный текст для описания */
+  font-size: 15px;
+  margin: 0;
+}
+

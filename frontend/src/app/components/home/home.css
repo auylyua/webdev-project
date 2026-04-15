@@ -1,0 +1,87 @@
+.home-hero {
+  height: 100vh;
+  background: url('https://images.unsplash.com/photo-1507842217343-583bb7270b66') no-repeat center center/cover;
+  position: relative;
+  margin: -40px; 
+  color: white;
+}
+
+.hero-overlay {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(75deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+  display: flex;
+  align-items: center;
+  padding-left: 60px;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.badge {
+  background: #7ca99a;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.hero-content h1 {
+  font-size: 56px;
+  font-weight: 900;
+  margin: 20px 0;
+  line-height: 1.1;
+}
+
+.hero-content p {
+  font-size: 18px;
+  color: #cccccc;
+  margin-bottom: 30px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.btn-primary {
+  background: #7ca99a;
+  border: none;
+  padding: 15px 30px;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid white;
+  padding: 15px 30px;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+}
+
+.trending-section {
+  position: absolute;
+  bottom: 40px;
+  left: 60px;
+}
+
+.trending-row {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.trend-item {
+  background: rgba(255,255,255,0.05);
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
+}

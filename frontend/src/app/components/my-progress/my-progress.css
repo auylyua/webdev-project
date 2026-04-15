@@ -1,0 +1,23 @@
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background: white;
+  padding: 15px 25px;
+  border-radius: 12px;
+  border: 1px solid #eef2f1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid #eee;
+  margin: 40px 0;
+}
+

@@ -1,1 +1,20 @@
-<p>catalog works!</p>
+<div class="catalog-container">
+  <h2>Our Library</h2>
+  <div class="grid">
+    <div class="book-card" *ngFor="let book of books">
+      <div class="book-header">
+        <h3>{{ book.title }}</h3>
+        <span class="genre">{{ book.genre }}</span>
+      </div>
+      
+      <div class="book-details">
+        <p class="author"><strong>Author:</strong> {{ book.author }}</p>
+        <p class="pages"><strong>Total Pages:</strong> {{ book.total_pages }}</p>
+      </div>
+      
+      <div class="card-footer">
+        <button class="action-btn">Start Reading</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="progress-page">
+  <section class="stats-overview">
+    <div class="stat-card">
+      <span class="stat-icon">📚</span>
+      <div class="stat-info">
+        <span class="stat-value">12</span>
+        <span class="stat-label">Finished</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🔥</span>
+      <div class="stat-info">
+        <span class="stat-value">5</span>
+        <span class="stat-label">Days Streak</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">⏳</span>
+      <div class="stat-info">
+        <span class="stat-value">{{ activeEntries.length }}</span>
+        <span class="stat-label">Reading Now</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <header class="section-header">
+    <h2>Current Bookshelf</h2>
+    <p>Detailed tracking of your active reading sessions.</p>
+  </header>
+
+  <div class="progress-grid" *ngIf="activeEntries.length > 0; else emptyState">
+    <div class="progress-card" *ngFor="let entry of activeEntries">
+      <div class="card-badge">Active</div>
+      <div class="book-info">
+        <span class="book-icon">📖</span>
+        <div class="details">
+          <h3>{{ entry.book_title }}</h3>
+          <p>Page {{ entry.current_page }}</p>
+        </div>
+      </div>
+      
+      <div class="progress-container">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" [style.width.%]="entry.current_page"></div>
+        </div>
+        <span class="percentage">{{ entry.current_page }}%</span>
+      </div>
+
+      <button class="update-btn">Update Progress</button>
+    </div>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <p>Your shelf is empty. Time to pick a new book!</p>
+      <button routerLink="/catalog">Browse Catalog</button>
+    </div>
+  </ng-template>
+</div>

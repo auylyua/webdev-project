@@ -1,19 +1,22 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Book } from '../models/models';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private http = inject(HttpClient);
-  private url = 'http://127.0.0.1:8001/api/books/';
+  private baseUrl = 'http://127.0.0.1:8000/api';
 
-  getBooks() {
-    return this.http.get<Book[]>(this.url);
+
+  getBooks(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/books/`);
   }
 
-  createBook(book: Book) {
-    return this.http.post<Book>(this.url, book);
+
+  getReadingEntries(token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get(`${this.baseUrl}/entries/`, { headers });
   }
 }

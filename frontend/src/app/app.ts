@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router'; // Обязательно добавь это
+import { RouterModule } from '@angular/router'; 
+import { provideHttpClient } from '@angular/common/http';
+import { routes } from './app.routes';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule], // Добавь RouterModule в импорты
+  imports: [CommonModule, RouterModule], 
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
