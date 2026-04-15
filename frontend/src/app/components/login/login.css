@@ -1,0 +1,76 @@
+.page-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.auth-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: white;
+}
+
+.info-section {
+  flex: 1;
+  background-color: #7ca99a; /* Тот самый цвет из референса */
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 60px;
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.tab-switcher {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+  margin: 20px 0;
+}
+
+.tab-switcher button {
+  flex: 1;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  background: none;
+  font-weight: 500;
+}
+
+.tab-switcher button.active {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.main-btn {
+  width: 100%;
+  background: #7ca99a;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.input-group {
+  text-align: left;
+  margin-bottom: 15px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  margin-top: 5px;
+}
