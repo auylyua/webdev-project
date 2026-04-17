@@ -4,19 +4,22 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+from django.db.models import Avg, Count
 
-from .models import Book, ReadingEntry, Note, Review
+from .models import Book, ReadingEntry, Note, Review, UserProfile, Collection
 from .serializers import (
     LoginSerializer,
-    ProgressUpdateSerializer,
+    RegisterSerializer,
     BookSerializer,
     ReadingEntrySerializer,
     NoteSerializer,
     ReviewSerializer,
-    RegisterSerializer,
+    UserProfileSerializer,
+    PublicUserSerializer,
+    CollectionSerializer,
 )
 
-# --- AUTH VIEWS ---
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -53,26 +56,41 @@ def login_view(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def logout_view(request):
-    # На бэкенде JWT обычно не инвалидируется принудительно без Blacklist.
-    # Фронтенд просто удаляет токен из localStorage.
     return Response(
         {'message': 'Logout successful (client should delete token)'},
         status=status.HTTP_200_OK
     )
 
 
-# --- BOOK VIEWS ---
-
 class BookListCreateAPIView(APIView):
-    # Доступно всем, чтобы пользователи видели каталог без логина
-    permission_classes = [AllowAny] 
+    permission_classes = [AllowAny]
 
     def get(self, request):
         books = Book.objects.all().order_by('-created_at')
+        genre = request.query_params.get('genre')
+        year = request.query_params.get('year')
+        search = request.query_params.get('search')
+        sort = request.query_params.get('sort')
+
+        if genre:
+            books = books.filter(genre__icontains=genre)
+        if year:
+            books = books.filter(published_year=year)
+        if search:
+            books = books.filter(title__icontains=search) | books.filter(author__icontains=search)
+        if sort == 'rating':
+            books = books.annotate(avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
+        elif sort == 'year':
+            books = books.order_by('-published_year')
+        elif sort == 'title':
+            books = books.order_by('title')
+
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         serializer = BookSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -80,21 +98,61 @@ class BookListCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# --- READING PROGRESS VIEWS ---
+class BookDetailAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        try:
+            book = Book.objects.get(pk=pk)
+        except Book.DoesNotExist:
+            return Response({'error': 'Book not found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = BookSerializer(book)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def top_books_view(request):
+    books = (
+        Book.objects
+        .annotate(avg_rating=Avg('reviews__rating'), reviews_count=Count('reviews'))
+        .filter(reviews_count__gte=1)
+        .order_by('-avg_rating')[:10]
+    )
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def currently_reading_view(request):
+    book_ids = ReadingEntry.objects.filter(status='reading').values_list('book_id', flat=True).distinct()
+    books = Book.objects.filter(id__in=book_ids)
+    serializer = BookSerializer(books, many=True)
+    return Response(serializer.data)
+
+
 
 class ReadingEntryListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # Показываем записи только текущего пользователя
         entries = ReadingEntry.objects.filter(user=request.user).order_by('-id')
+        status_filter = request.query_params.get('status')
+        if status_filter:
+            entries = entries.filter(status=status_filter)
         serializer = ReadingEntrySerializer(entries, many=True)
         return Response(serializer.data)
 
     def post(self, request):
+        book_id = request.data.get('book')
+        if ReadingEntry.objects.filter(user=request.user, book_id=book_id).exists():
+            return Response(
+                {'error': 'You already have this book in your reading list.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         serializer = ReadingEntrySerializer(data=request.data)
         if serializer.is_valid():
-            # Важно: привязываем запись к юзеру из токена
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -112,17 +170,14 @@ class ReadingEntryDetailAPIView(APIView):
     def get(self, request, pk):
         entry = self.get_object(pk, request.user)
         if not entry:
-            return Response({'error': 'Reading entry not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         serializer = ReadingEntrySerializer(entry)
         return Response(serializer.data)
 
     def patch(self, request, pk):
-        """Метод для частичного обновления (например, только текущей страницы)"""
         entry = self.get_object(pk, request.user)
         if not entry:
-            return Response({'error': 'Reading entry not found.'}, status=status.HTTP_404_NOT_FOUND)
-        
-        # Используем partial=True, чтобы не требовать все поля при обновлении
+            return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         serializer = ReadingEntrySerializer(entry, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -132,12 +187,11 @@ class ReadingEntryDetailAPIView(APIView):
     def delete(self, request, pk):
         entry = self.get_object(pk, request.user)
         if not entry:
-            return Response({'error': 'Reading entry not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
         entry.delete()
-        return Response({'message': 'Reading entry deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': 'Deleted.'}, status=status.HTTP_204_NO_CONTENT)
 
 
-# --- NOTES & REVIEWS VIEWS ---
 
 class NoteListCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -164,8 +218,146 @@ class ReviewListCreateAPIView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        book_id = request.data.get('book')
+        if Review.objects.filter(user=request.user, book_id=book_id).exists():
+            return Response(
+                {'error': 'You have already reviewed this book.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class MyProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PublicUserProfileAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = PublicUserSerializer(user)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def user_reviews_view(request, pk):
+    reviews = Review.objects.filter(user_id=pk).order_by('-created_at')
+    serializer = ReviewSerializer(reviews, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def user_collections_view(request, pk):
+    collections = Collection.objects.filter(user_id=pk, is_public=True).order_by('-created_at')
+    serializer = CollectionSerializer(collections, many=True)
+    return Response(serializer.data)
+
+
+class CollectionListCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        collections = Collection.objects.filter(user=request.user).order_by('-created_at')
+        serializer = CollectionSerializer(collections, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = CollectionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CollectionDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk, user):
+        try:
+            return Collection.objects.get(pk=pk, user=user)
+        except Collection.DoesNotExist:
+            return None
+
+    def get(self, request, pk):
+        collection = self.get_object(pk, request.user)
+        if not collection:
+            return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = CollectionSerializer(collection)
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        collection = self.get_object(pk, request.user)
+        if not collection:
+            return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = CollectionSerializer(collection, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        collection = self.get_object(pk, request.user)
+        if not collection:
+            return Response({'error': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+        collection.delete()
+        return Response({'message': 'Collection deleted.'}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def collection_book_view(request, pk, book_id):
+    try:
+        collection = Collection.objects.get(pk=pk, user=request.user)
+    except Collection.DoesNotExist:
+        return Response({'error': 'Collection not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        book = Book.objects.get(pk=book_id)
+    except Book.DoesNotExist:
+        return Response({'error': 'Book not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'POST':
+        collection.books.add(book)
+        return Response({'message': f'Book "{book.title}" added to collection.'})
+    else:
+        collection.books.remove(book)
+        return Response({'message': f'Book "{book.title}" removed from collection.'})
+    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_root(request):
+    return Response({
+        "message": "Welcome to Reading Progress Tracker API",
+        "endpoints": {
+            "auth": "/api/register/, /api/login/, /api/logout/",
+            "books": "/api/books/, /api/books/<id>/, /api/books/top/, /api/books/currently-reading/",
+            "reading_entries": "/api/entries/, /api/entries/<id>/",
+            "notes": "/api/notes/",
+            "reviews": "/api/reviews/",
+            "profile": "/api/profile/, /api/users/<id>/",
+            "collections": "/api/collections/, /api/collections/<id>/",
+        }
+    })

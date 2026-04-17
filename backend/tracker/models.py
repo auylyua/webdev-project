@@ -1,16 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg
+
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=150)
     total_pages = models.PositiveIntegerField()
     genre = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    published_year = models.PositiveIntegerField(null=True, blank=True)
+    cover_image = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def average_rating(self):
+        result = self.reviews.aggregate(avg=Avg('rating'))
+        avg = result['avg']
+        return round(avg, 1) if avg else None
 
     def __str__(self):
         return f"{self.title} by {self.author}"
+
 
 class ReadingEntry(models.Model):
     STATUS_CHOICES = [
@@ -18,7 +28,7 @@ class ReadingEntry(models.Model):
         ('reading', 'Reading'),
         ('finished', 'Finished'),
         ('dropped', 'Dropped'),
-]
+    ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reading_entries')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reading_entries')
@@ -30,6 +40,7 @@ class ReadingEntry(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.book.title} ({self.status})"
 
+
 class Note(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notes')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='notes')
@@ -40,6 +51,7 @@ class Note(models.Model):
     def __str__(self):
         return f"Note by {self.user.username} for {self.book.title}"
 
+
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
@@ -47,5 +59,30 @@ class Review(models.Model):
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'book')
+
     def __str__(self):
         return f"Review by {self.user.username} for {self.book.title}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    bio = models.TextField(blank=True)
+    avatar_url = models.URLField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Profile of {self.user.username}"
+
+
+class Collection(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='collections')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    books = models.ManyToManyField(Book, related_name='collections', blank=True)
+    is_public = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'"{self.title}" by {self.user.username}'
