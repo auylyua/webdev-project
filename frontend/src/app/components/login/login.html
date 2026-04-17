@@ -15,15 +15,20 @@
         <h2>{{ isLoginMode ? 'Welcome back' : 'Create an account' }}</h2>
         <p class="subtitle">{{ isLoginMode ? 'Sign in to access your dashboard' : 'Join us to track student progress' }}</p>
 
-        <form>
+        <form (ngSubmit)="onSubmit()">
           <div class="input-group">
+            <label>Username</label>
+            <input type="text" [(ngModel)]="username" name="username" placeholder="your_username" required>
+          </div>
+
+          <div class="input-group" *ngIf="!isLoginMode">
             <label>Email</label>
-            <input type="email" placeholder="you@example.com">
+            <input type="email" [(ngModel)]="email" name="email" placeholder="you@example.com">
           </div>
 
           <div class="input-group">
             <label>Password</label>
-            <input type="password" placeholder="••••••••">
+            <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
           </div>
 
           <button type="submit" class="main-btn">
@@ -53,6 +58,6 @@
           <p>Track your yearly goals, finished books, and the evolution of your reading habits.</p>
         </div>
       </div>
-      </div>
+    </div>
   </div>
 </div>
