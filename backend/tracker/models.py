@@ -26,6 +26,7 @@ class ReadingEntry(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='planned')
     started_at = models.DateField(null=True, blank=True)
     finished_at = models.DateField(null=True, blank=True)
+    rating = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.user.username} - {self.book.title} ({self.status})"

@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router'; 
-import { provideHttpClient } from '@angular/common/http';
-import { routes } from './app.routes';
+import { RouterModule, Router } from '@angular/router'; 
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,9 +11,11 @@ import { routes } from './app.routes';
   styleUrl: './app.css'
 })
 export class AppComponent {
-  isLoggedIn = false;
+  public authService = inject(AuthService);
+  private router = inject(Router);
 
-  login() {
-    this.isLoggedIn = true;
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

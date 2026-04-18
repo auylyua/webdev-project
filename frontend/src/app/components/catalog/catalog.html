@@ -1,19 +1,26 @@
 <div class="catalog-container">
-  <h2>Our Library</h2>
-  <div class="grid">
+  <div class="catalog-actions">
+    <div class="search-box">
+      <input type="text" placeholder="Search by title or author..." (input)="onSearch($event)">
+    </div>
+    
+  </div>
+
+  <div class="book-grid">
     <div class="book-card" *ngFor="let book of books">
-      <div class="book-header">
+      <div class="card-image-wrapper">
+         <span class="genre-tag">{{ book.genre || 'Book' }}</span>
+         <div class="icon-placeholder">📖</div>
+      </div>
+      <div class="card-content">
         <h3>{{ book.title }}</h3>
-        <span class="genre">{{ book.genre }}</span>
-      </div>
-      
-      <div class="book-details">
-        <p class="author"><strong>Author:</strong> {{ book.author }}</p>
-        <p class="pages"><strong>Total Pages:</strong> {{ book.total_pages }}</p>
-      </div>
-      
-      <div class="card-footer">
-        <button class="action-btn">Start Reading</button>
+        <p class="author">by {{ book.author }}</p>
+        <div class="book-meta">
+          <span>📄 {{ book.total_pages }} pages</span>
+        </div>
+        <button class="btn-add-catalog" (click)="addToProgress(book.id)">
+          Add to Reading
+        </button>
       </div>
     </div>
   </div>

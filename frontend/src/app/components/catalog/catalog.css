@@ -1,27 +1,110 @@
+/* Основной контейнер */
 .catalog-container {
-  padding: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 40px 60px;
+  background-color: #fcfcfc;
+  min-height: 100vh;
 }
 
-.catalog-container h2 {
-  color: #1a1f1e; 
-  font-family: 'Nunito', sans-serif;
-  font-size: 32px;
-  margin-bottom: 30px;
+/* Панель поиска и фильтров */
+.catalog-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 20px;
 }
 
-.grid {
+.search-box input {
+  width: 350px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #7ca99a; /* Твой фирменный зеленый */
+  box-shadow: 0 0 0 3px rgba(124, 169, 154, 0.1);
+}
+
+.genre-filter {
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  cursor: pointer;
+}
+
+/* Сетка книг — ВОЗВРАЩАЕМ КАРТОЧКИ */
+.book-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
 }
 
 .book-card {
   background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  transition: all 0.4s ease;
+  border: 1px solid #f0f0f0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(124, 169, 154, 0.15);
+}
+
+/* Область иконки/обложки */
+.card-image-wrapper {
+  background: #f3f4f6;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.icon-placeholder {
+  font-size: 50px;
+}
+
+/* Контент внутри карточки */
+.card-content {
   padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); /* Мягкая тень */
-  border: 1px solid #f0f4f3;
-  transition: transform 0.2
+  text-align: left;
+}
+
+.card-content h3 {
+  margin: 0 0 5px 0;
+  font-size: 20px;
+  color: #1a1f1e;
+}
+
+.author {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+/* Кнопка */
+.btn-add-catalog {
+  width: 100%;
+  background: #2d3436; /* Темный цвет из бокового меню */
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-add-catalog:hover {
+  background: #7ca99a; /* Твой фирменный зеленый */
 }

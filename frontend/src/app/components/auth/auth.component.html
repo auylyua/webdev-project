@@ -1,0 +1,38 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>{{ isLoginMode ? 'Sign In' : 'Join Us' }}</h2>
+      <p>{{ isLoginMode ? 'Welcome back! Please enter your details.' : 'Start your reading journey today.' }}</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit(authForm)" #authForm="ngForm">
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" name="username" ngModel required placeholder="Enter username">
+      </div>
+
+      <div class="input-group" *ngIf="!isLoginMode">
+        <label>Email Address</label>
+        <input type="email" name="email" ngModel required placeholder="name@example.com">
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" name="password" ngModel required minlength="6" placeholder="Min. 6 characters">
+      </div>
+
+      <div class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <button type="submit" class="auth-btn">
+        {{ isLoginMode ? 'Login' : 'Create Account' }}
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <span>{{ isLoginMode ? "Don't have an account?" : "Already a member?" }}</span>
+      <button (click)="isLoginMode = !isLoginMode" class="toggle-btn">
+        {{ isLoginMode ? 'Register now' : 'Sign in' }}
+      </button>
+    </div>
+  </div>
+</div>

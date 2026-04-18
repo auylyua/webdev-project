@@ -1,61 +1,81 @@
-<div class="progress-page">
-  <section class="stats-overview">
-    <div class="stat-card">
-      <span class="stat-icon">📚</span>
-      <div class="stat-info">
-        <span class="stat-value">12</span>
-        <span class="stat-label">Finished</span>
-      </div>
+<div class="progress-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>Reading Progress</h1>
+      <p class="stats">Books in track: <span>{{ entries.length }}</span></p>
     </div>
-    <div class="stat-card">
-      <span class="stat-icon">🔥</span>
-      <div class="stat-info">
-        <span class="stat-value">5</span>
-        <span class="stat-label">Days Streak</span>
-      </div>
-    </div>
-    <div class="stat-card">
-      <span class="stat-icon">⏳</span>
-      <div class="stat-info">
-        <span class="stat-value">{{ activeEntries.length }}</span>
-        <span class="stat-label">Reading Now</span>
-      </div>
-    </div>
-  </section>
-
-  <hr class="divider">
-
-  <header class="section-header">
-    <h2>Current Bookshelf</h2>
-    <p>Detailed tracking of your active reading sessions.</p>
   </header>
 
-  <div class="progress-grid" *ngIf="activeEntries.length > 0; else emptyState">
-    <div class="progress-card" *ngFor="let entry of activeEntries">
-      <div class="card-badge">Active</div>
-      <div class="book-info">
-        <span class="book-icon">📖</span>
-        <div class="details">
-          <h3>{{ entry.book_title }}</h3>
-          <p>Page {{ entry.current_page }}</p>
-        </div>
-      </div>
-      
-      <div class="progress-container">
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" [style.width.%]="entry.current_page"></div>
-        </div>
-        <span class="percentage">{{ entry.current_page }}%</span>
+  <div class="book-grid">
+    <div class="empty-state" *ngIf="entries.length === 0">
+      <p>Your shelf is empty. Time to pick a new book!</p>
+      <button routerLink="/catalog" class="browse-btn">Browse Catalog</button>
+    </div>
+
+    <div class="book-card" *ngFor="let entry of entries">
+      <div class="card-header">
+        <span class="status-badge" [ngClass]="entry.status?.toLowerCase()">
+            {{ entry.status | titlecase }}
+        </span>
+        <div class="book-icon">📖</div>
       </div>
 
-      <button class="update-btn">Update Progress</button>
+      <div class="book-info">
+        <h3>{{ entry.book_title || 'Untitled Book' }}</h3>
+        <p class="entry-id">Entry ID: #{{ entry.id }}</p>
+        
+        <div class="rating-stars" *ngIf="entry.rating">
+          <span class="star">⭐</span> {{ entry.rating }}/10
+        </div>
+      </div>
+
+      <div class="progress-wrapper">
+        <div class="progress-labels">
+          <span>Progress</span>
+          <span>{{ entry.current_page }} pages</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-fill" [style.width.%]="(entry.current_page / 500) * 100"></div>
+        </div>
+      </div>
+
+      <button class="edit-btn" (click)="openEditModal(entry)">
+        Update Details
+      </button>
     </div>
   </div>
 
-  <ng-template #emptyState>
-    <div class="empty-state">
-      <p>Your shelf is empty. Time to pick a new book!</p>
-      <button routerLink="/catalog">Browse Catalog</button>
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-window" (click)="$event.stopPropagation()">
+      <h2>Update Progress</h2>
+      <p class="modal-target">{{ selectedEntry?.book_title }}</p>
+
+      <div class="form-field">
+        <label>Current Page</label>
+        <input type="number" [(ngModel)]="editData.current_page" placeholder="e.g. 124">
+      </div>
+
+      <div class="form-field">
+        <label>Status</label>
+        <select [(ngModel)]="editData.status" name ="status">
+        
+          <option value="planned">Planned</option>
+          <option value="reading">Reading</option>
+          <option value="finished">Finished</option>
+          <option value="dropped">Dropped</option>
+          
+        </select>
+      </div>
+
+      <div class="form-field">
+        <label>Rating: {{ editData.rating }}</label>
+        <input type="range" min="0" max="10" [(ngModel)]="editData.rating">
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+        <button class="btn-save" (click)="saveChanges()">Save Changes</button>
+      </div>
     </div>
-  </ng-template>
+  </div>
 </div>

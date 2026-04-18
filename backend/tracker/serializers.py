@@ -42,11 +42,11 @@ class BookSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ReadingEntrySerializer(serializers.ModelSerializer):
-    # StringRelatedField покажет имя пользователя вместо его ID
+    
     user = serializers.StringRelatedField(read_only=True)
-    # Позволяет получить название книги напрямую из связанной модели Book
+    
     book_title = serializers.CharField(source='book.title', read_only=True)
-    # Получаем общее кол-во страниц из модели Book для расчета % в Angular
+   
     total_pages = serializers.IntegerField(source='book.total_pages', read_only=True)
 
     class Meta:
@@ -61,6 +61,7 @@ class ReadingEntrySerializer(serializers.ModelSerializer):
             'status',
             'started_at',
             'finished_at',
+            'rating',
         ]
 
 class ProgressUpdateSerializer(serializers.Serializer):

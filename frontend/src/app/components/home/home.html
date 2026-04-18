@@ -3,14 +3,25 @@
     <div class="hero-content">
       <span class="badge">Recommended for you</span>
       <h1>Master Your Reading Journey</h1>
-      <p>Track your yearly goals, finished books, and the evolution of your reading habits in one place.</p>
+      <p>
+        Track your yearly goals, finished books, and the evolution of your reading habits in one place.
+      </p>
       
       <div class="hero-buttons">
-        <button class="btn-primary" routerLink="/catalog">Explore Catalog</button>
-        <button class="btn-secondary" routerLink="/my-progress">View My Progress</button>
+        <button 
+          *ngIf="!authService.isLoggedIn()" 
+          class="btn-primary" 
+          routerLink="/login">
+          Sign In
+        </button>
+
+        <button 
+          *ngIf="authService.isLoggedIn()" 
+          class="btn-primary" 
+          routerLink="/catalog">
+          Go to Catalog
+        </button>
       </div>
     </div>
   </div>
-
-  
 </div>
