@@ -48,6 +48,23 @@ addToMyProgress(bookId: number, token: string) {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.patch(`${this.apiUrl}/entries/${entryId}/`, data,  { headers });
 }
+  // src/app/services/api.service.ts
+
+getUserNotes(token: string) {
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
+  // Убедись, что этот URL совпадает с твоим Django backend
+  return this.http.get<any[]>(`${this.apiUrl}/profile/notes/`, { headers });
+}
+
+getUserReviews(token: string) {
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
+  // Убедись, что этот URL совпадает с твоим Django backend
+  return this.http.get<any[]>(`${this.apiUrl}/profile/reviews/`, { headers });
+}
 
 
 }

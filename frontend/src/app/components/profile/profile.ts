@@ -1,9 +1,55 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-profile',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './profile.html',
-  styleUrl: './profile.css',
+  styleUrl: './profile.css'
 })
-export class Profile {}
+export class Profile implements OnInit {
+  private apiService = inject(ApiService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+
+  user: any = { email: localStorage.getItem('userEmail') || 'User' };
+  notes: any[] = [];
+  reviews: any[] = [];
+
+  ngOnInit() {
+    this.loadProfileData();
+  }
+
+  loadProfileData() {
+    const token = localStorage.getItem('access');
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    // Загружаем заметки
+    this.apiService.getUserNotes(token).subscribe({
+      next: (data: any) => {
+        this.notes = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading notes:', err)
+    });
+
+    // Загружаем отзывы
+    this.apiService.getUserReviews(token).subscribe({
+      next: (data: any) => {
+        this.reviews = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading reviews:', err)
+    });
+  }
+
+  goToCatalog() {
+    this.router.navigate(['/catalog']);
+  }
+}
