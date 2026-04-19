@@ -25,7 +25,7 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    // Используем !! чтобы всегда возвращать true/false (избегаем типа unknown)
+    
     return !!localStorage.getItem('access');
   }
 

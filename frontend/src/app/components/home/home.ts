@@ -24,7 +24,7 @@ export class Home implements OnInit {
   loadHomeData() {
     const token = localStorage.getItem('access');
     if (token) {
-      this.apiService.getLastActiveBook(token).subscribe({
+      this.apiService.getLastActiveBook().subscribe({
         next: (data: any) => {
           this.homeData = data;
           

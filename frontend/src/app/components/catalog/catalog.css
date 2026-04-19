@@ -1,11 +1,11 @@
-/* Основной контейнер */
+
 .catalog-container {
   padding: 40px 60px;
   background-color: #fcfcfc;
   min-height: 100vh;
 }
 
-/* Панель поиска и фильтров */
+
 .catalog-actions {
   display: flex;
   justify-content: space-between;
@@ -26,7 +26,7 @@
 
 .search-box input:focus {
   outline: none;
-  border-color: #7ca99a; /* Твой фирменный зеленый */
+  border-color: #7ca99a;
   box-shadow: 0 0 0 3px rgba(124, 169, 154, 0.1);
 }
 
@@ -38,7 +38,7 @@
   cursor: pointer;
 }
 
-/* Сетка книг — ВОЗВРАЩАЕМ КАРТОЧКИ */
+
 .book-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -61,7 +61,7 @@
   box-shadow: 0 20px 40px rgba(124, 169, 154, 0.15);
 }
 
-/* Область иконки/обложки */
+
 .card-image-wrapper {
   background: #f3f4f6;
   padding: 40px;
@@ -74,7 +74,7 @@
   font-size: 50px;
 }
 
-/* Контент внутри карточки */
+
 .card-content {
   padding: 20px;
   text-align: left;
@@ -92,10 +92,10 @@
   margin-bottom: 15px;
 }
 
-/* Кнопка */
+
 .btn-add-catalog {
   width: 100%;
-  background: #2d3436; /* Темный цвет из бокового меню */
+  background: #2d3436; 
   color: white;
   border: none;
   padding: 14px;
@@ -106,5 +106,5 @@
 }
 
 .btn-add-catalog:hover {
-  background: #7ca99a; /* Твой фирменный зеленый */
+  background: #7ca99a; 
 }

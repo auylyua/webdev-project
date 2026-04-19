@@ -30,8 +30,8 @@ export class Profile implements OnInit {
       return;
     }
 
-    // Загружаем заметки
-    this.apiService.getUserNotes(token).subscribe({
+    
+    this.apiService.getUserNotes().subscribe({
       next: (data: any) => {
         this.notes = data;
         this.cdr.detectChanges();
@@ -39,8 +39,8 @@ export class Profile implements OnInit {
       error: (err) => console.error('Error loading notes:', err)
     });
 
-    // Загружаем отзывы
-    this.apiService.getUserReviews(token).subscribe({
+    
+    this.apiService.getUserReviews().subscribe({
       next: (data: any) => {
         this.reviews = data;
         this.cdr.detectChanges();

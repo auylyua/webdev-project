@@ -1,4 +1,4 @@
-/* Основной контейнер */
+
 .page-container {
   display: flex;
   height: 100vh;
@@ -7,7 +7,7 @@
   overflow: hidden;
 }
 
-/* --- ЛЕВАЯ СЕКЦИЯ (АВТОРИЗАЦИЯ) --- */
+
 .auth-section {
   flex: 1;
   display: flex;
@@ -37,7 +37,7 @@
   font-size: 14px;
 }
 
-/* Переключатель вкладок */
+
 .tab-switcher {
   display: flex;
   background: #f3f4f6;
@@ -64,9 +64,9 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-/* Форма */
+
 .form-content h2 {
-  color: #000000; /* Четкий черный заголовок */
+  color: #000000; 
   font-size: 28px;
   font-weight: 800;
   margin-bottom: 8px;
@@ -74,7 +74,7 @@
 }
 
 .subtitle {
-  color: #4b5563; /* Темно-серый подзаголовок */
+  color: #4b5563; 
   font-size: 15px;
   margin-bottom: 25px;
   text-align: left;
@@ -148,7 +148,7 @@
   font-weight: 700;
 }
 
-/* --- ПРАВАЯ СЕКЦИЯ (ИНФО) --- */
+
 .info-section {
   flex: 1;
   background-color: #7ca99a;
@@ -163,7 +163,7 @@
 }
 
 .info-content h1 {
-  color: #1a2e2a; /* Очень темный хвойный для контраста */
+  color: #1a2e2a;
   font-size: 48px;
   font-weight: 800;
   line-height: 1.1;
@@ -171,7 +171,7 @@
 }
 
 .info-content p {
-  color: #ffffff; /* Белый текст на зеленом фоне */
+  color: #ffffff; 
   font-size: 18px;
   line-height: 1.6;
   margin-bottom: 40px;
@@ -191,14 +191,14 @@
 }
 
 .feature-item strong {
-  color: #1a2e2a; /* Заголовок фичи — темный */
+  color: #1a2e2a; 
   font-size: 18px;
   display: block;
   margin-bottom: 5px;
 }
 
 .feature-item p {
-  color: #f0fdf4; /* Светло-мятный текст для описания */
+  color: #f0fdf4; 
   font-size: 15px;
   margin: 0;
 }

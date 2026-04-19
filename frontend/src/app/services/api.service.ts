@@ -9,30 +9,30 @@ export class ApiService {
   private http = inject(HttpClient);
   private apiUrl = 'http://127.0.0.1:8000/api';
 
+  
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('access_token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+  }
+
   getBooks(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/books/`);
   }
 
-  getReadingEntries(token: string): Observable<any[]> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<any[]>(`${this.apiUrl}/entries/`, { headers });
+  
+  getReadingEntries(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/entries/`, { headers: this.getHeaders() });
   }
 
-  
-addToMyProgress(bookId: number, token: string) {
-  const headers =new HttpHeaders( { 
-    'Authorization': `Bearer ${token}`,
-    'Content-Type': 'application/json'
-  });
-  
-  // Отправляем ID книги на эндпоинт прогресса
-  // Убедись, что URL совпадает с твоим (например, /api/my-progress/)
-  return this.http.post(`${this.apiUrl}/my-progress/`, { book: bookId }, { headers });
-}
+  addToMyProgress(bookId: number) {
+    return this.http.post(`${this.apiUrl}/my-progress/`, { book: bookId }, { headers: this.getHeaders() });
+  }
 
-  getLastActiveBook(token: string): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<any>(`${this.apiUrl}/home-stats/`, { headers });
+  getLastActiveBook(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/home-stats/`, { headers: this.getHeaders() });
   }
 
   login(data: any): Observable<any> {
@@ -44,27 +44,15 @@ addToMyProgress(bookId: number, token: string) {
   }
 
   
-  updateProgress(token: string, entryId: number,  data: any): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.patch(`${this.apiUrl}/entries/${entryId}/`, data,  { headers });
-}
-  // src/app/services/api.service.ts
+  updateReadingEntry(entryId: number, data: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/entries/${entryId}/`, data, { headers: this.getHeaders() });
+  }
 
-getUserNotes(token: string) {
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${token}`
-  });
-  // Убедись, что этот URL совпадает с твоим Django backend
-  return this.http.get<any[]>(`${this.apiUrl}/profile/notes/`, { headers });
-}
+  getUserNotes() {
+    return this.http.get<any[]>(`${this.apiUrl}/profile/notes/`, { headers: this.getHeaders() });
+  }
 
-getUserReviews(token: string) {
-  const headers = new HttpHeaders({
-    'Authorization': `Bearer ${token}`
-  });
-  // Убедись, что этот URL совпадает с твоим Django backend
-  return this.http.get<any[]>(`${this.apiUrl}/profile/reviews/`, { headers });
-}
-
-
+  getUserReviews() {
+    return this.http.get<any[]>(`${this.apiUrl}/profile/reviews/`, { headers: this.getHeaders() });
+  }
 }

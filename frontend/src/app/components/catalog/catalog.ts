@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core'; // Добавь ChangeDetectorRef
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core'; 
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { RouterModule, Router } from '@angular/router';
@@ -38,7 +38,7 @@ export class Catalog implements OnInit {
   onSearch(event: any) {
     const searchTerm = event.target.value.toLowerCase();
     
-    // Фильтруем книги по названию или автору
+    
     this.filteredBooks = this.books.filter(book => 
       book.title.toLowerCase().includes(searchTerm) || 
       book.author.toLowerCase().includes(searchTerm)
@@ -54,7 +54,7 @@ export class Catalog implements OnInit {
     }
 
     
-    this.apiService.addToMyProgress(bookId, token).subscribe({
+    this.apiService.addToMyProgress(bookId).subscribe({
       next: (response: any) => {
         alert('Книга добавлена в ваш список прогресса!');
         console.log('Успех:', response);
