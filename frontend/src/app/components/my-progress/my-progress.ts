@@ -1,12 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-<<<<<<< HEAD
-import { RouterModule } from '@angular/router'; 
-import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../services/api.service';
-=======
 import { ApiService } from '../../services/api';
->>>>>>> 98cf248e4634986f554a895889a8c20f07279ba7
 
 @Component({
   selector: 'app-my-progress',
@@ -25,60 +19,6 @@ export class MyProgress implements OnInit {
   isModalOpen = false;
   selectedEntry: any = null;
 
-<<<<<<< HEAD
-  // Поля формы редактирования
-  editData = {
-    current_page: 0,
-    status: 'reading',
-    rating: 0
-  };
-
-  ngOnInit() {
-    this.loadProgress();
-  }
-
-  loadProgress() {
-    const token = localStorage.getItem('access');
-    if (token) {
-      this.apiService.getReadingEntries(token).subscribe({
-        next: (data: any[]) => {
-          console.log('Data from server:', data);
-          this.entries = data;
-          this.cdr.detectChanges();
-        },
-        error: (err) => console.error('Ошибка загрузки:', err)
-      });
-    }
-  }
-
-  // Открыть модалку и заполнить её текущими данными
-  openEditModal(entry: any) {
-    this.selectedEntry = entry;
-    this.editData = {
-      current_page: entry.current_page,
-      status: entry.status,
-      rating: entry.rating || 0
-    };
-    this.isModalOpen = true;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-    this.selectedEntry = null;
-  }
-
-  saveChanges() {
-    const token = localStorage.getItem('access');
-    if (token && this.selectedEntry) {
-      this.apiService.updateProgress(token, this.selectedEntry.id, this.editData).subscribe({
-        next: () => {
-          this.closeModal();
-          this.loadProgress();
-        },
-        error: (err) => alert('Ошибка при сохранении')
-      });
-    }
-=======
   ngOnInit() {
     const token = localStorage.getItem('access_token');
     console.log('Токен найден:', token);
@@ -90,6 +30,5 @@ export class MyProgress implements OnInit {
       },
       error: (err) => console.error('Ошибка API:', err)
     });
->>>>>>> 98cf248e4634986f554a895889a8c20f07279ba7
   }
 }
