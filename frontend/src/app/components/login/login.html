@@ -15,6 +15,7 @@
         <h2>{{ isLoginMode ? 'Welcome back' : 'Create an account' }}</h2>
         <p class="subtitle">{{ isLoginMode ? 'Sign in to access your dashboard' : 'Join us to track student progress' }}</p>
 
+<<<<<<< HEAD
         <form (ngSubmit)="isLoginMode ? onSignIn() : onRegister()">
           <div class="input-group">
             <label>Email / Username</label>
@@ -24,16 +25,31 @@
               [(ngModel)]="email" 
               placeholder="you@example.com" 
               required>
+=======
+        <form (ngSubmit)="onSubmit()">
+          <div class="input-group">
+            <label>Username</label>
+            <input type="text" [(ngModel)]="username" name="username" placeholder="your_username" required>
+          </div>
+
+          <div class="input-group" *ngIf="!isLoginMode">
+            <label>Email</label>
+            <input type="email" [(ngModel)]="email" name="email" placeholder="you@example.com">
+>>>>>>> 98cf248e4634986f554a895889a8c20f07279ba7
           </div>
 
           <div class="input-group">
             <label>Password</label>
+<<<<<<< HEAD
             <input 
               type="password" 
               name="password" 
               [(ngModel)]="password" 
               placeholder="••••••••" 
               required>
+=======
+            <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+>>>>>>> 98cf248e4634986f554a895889a8c20f07279ba7
           </div>
 
           <button type="submit" class="main-btn">

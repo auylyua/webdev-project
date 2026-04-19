@@ -1,8 +1,12 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+<<<<<<< HEAD
 import { RouterModule } from '@angular/router'; 
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
+=======
+import { ApiService } from '../../services/api';
+>>>>>>> 98cf248e4634986f554a895889a8c20f07279ba7
 
 @Component({
   selector: 'app-my-progress',
@@ -21,6 +25,7 @@ export class MyProgress implements OnInit {
   isModalOpen = false;
   selectedEntry: any = null;
 
+<<<<<<< HEAD
   // Поля формы редактирования
   editData = {
     current_page: 0,
@@ -73,5 +78,18 @@ export class MyProgress implements OnInit {
         error: (err) => alert('Ошибка при сохранении')
       });
     }
+=======
+  ngOnInit() {
+    const token = localStorage.getItem('access_token');
+    console.log('Токен найден:', token);
+
+    this.apiService.getReadingEntries().subscribe({
+      next: (data) => {
+        console.log('Данные из Django:', data);
+        this.activeEntries = data;
+      },
+      error: (err) => console.error('Ошибка API:', err)
+    });
+>>>>>>> 98cf248e4634986f554a895889a8c20f07279ba7
   }
 }

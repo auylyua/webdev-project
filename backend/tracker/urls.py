@@ -1,35 +1,30 @@
 from django.urls import path
 from .views import (
-    register_view,
-    login_view,
-    logout_view,
-    home_stats,  
-    BookListView,
-    ReadingEntryListCreateAPIView,
-    ReadingEntryDetailAPIView,
-    NoteListCreateAPIView,
-    ReviewListCreateAPIView,
-    add_to_progress  # Добавил этот импорт, чтобы кнопка в каталоге работала
+    login_view, logout_view, register_view,
+    BookListCreateAPIView, BookDetailAPIView, top_books_view, currently_reading_view,
+    ReadingEntryListCreateAPIView, ReadingEntryDetailAPIView,
+    NoteListCreateAPIView, ReviewListCreateAPIView,
+    MyProfileAPIView, PublicUserProfileAPIView, user_reviews_view, user_collections_view,
+    CollectionListCreateAPIView, CollectionDetailAPIView, collection_book_view,
 )
 
 urlpatterns = [
-    # AUTH
-    path('register/', register_view, name='register'),
-    path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    
-    # HOME
-    path('home-stats/', home_stats, name='home-stats'),
-    
-    # CATALOG
-    path('books/', BookListView.as_view(), name='book-list'),
-    path('books/<int:book_id>/add/', add_to_progress, name='add-to-progress'),
-    
-    # PROGRESS
-    path('entries/', ReadingEntryListCreateAPIView.as_view(), name='entry-list'),
-    path('entries/<int:pk>/', ReadingEntryDetailAPIView.as_view(), name='entry-detail'),
-    
-    # PROFILE (Notes & Reviews)
-    path('notes/', NoteListCreateAPIView.as_view(), name='note-list'),
-    path('reviews/', ReviewListCreateAPIView.as_view(), name='review-list'),
+    path('register/', register_view),
+    path('login/', login_view),
+    path('logout/', logout_view),
+    path('books/', BookListCreateAPIView.as_view()),
+    path('books/<int:pk>/', BookDetailAPIView.as_view()),
+    path('books/top/', top_books_view),
+    path('books/currently-reading/', currently_reading_view),
+    path('entries/', ReadingEntryListCreateAPIView.as_view()),
+    path('entries/<int:pk>/', ReadingEntryDetailAPIView.as_view()),
+    path('notes/', NoteListCreateAPIView.as_view()),
+    path('reviews/', ReviewListCreateAPIView.as_view()),
+    path('profile/', MyProfileAPIView.as_view()),
+    path('users/<int:pk>/', PublicUserProfileAPIView.as_view()),
+    path('users/<int:pk>/reviews/', user_reviews_view),
+    path('users/<int:pk>/collections/', user_collections_view),
+    path('collections/', CollectionListCreateAPIView.as_view()),
+    path('collections/<int:pk>/', CollectionDetailAPIView.as_view()),
+    path('collections/<int:pk>/books/<int:book_id>/', collection_book_view),
 ]
