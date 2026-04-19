@@ -28,17 +28,18 @@ export class Login {
     if (this.isLoginMode) {
       this.api.login({ username: this.username, password: this.password }).subscribe({
         next: (res) => {
-          localStorage.setItem('access_token', res.access);
-          localStorage.setItem('refresh_token', res.refresh);
-          window.location.href = '/home'; // простой вариант
+          localStorage.setItem('access', res.access);
+          localStorage.setItem('refresh', res.refresh);
+          window.location.href = '/home'; 
         },
         error: (err) => console.error('Login failed', err)
+        
       });
     } else {
       this.api.register({ username: this.username, email: this.email, password: this.password }).subscribe({
         next: (res) => {
-          localStorage.setItem('access_token', res.access);
-          localStorage.setItem('refresh_token', res.refresh);
+          localStorage.setItem('access', res.access);
+          localStorage.setItem('refresh', res.refresh);
           window.location.href = '/home';
         },
         error: (err) => console.error('Registration failed', err)
