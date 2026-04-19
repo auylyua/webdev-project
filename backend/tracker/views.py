@@ -92,6 +92,8 @@ def home_stats(request):
     }, status=status.HTTP_200_OK)
 
 class BookListCreateAPIView(APIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
     permission_classes = [AllowAny]
 
     def get(self, request):

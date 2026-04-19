@@ -1,4 +1,9 @@
 <div class="catalog-container">
+  <div class="catalog-header">
+    <h1>Book Catalog</h1>
+    <button class="btn-primary" (click)="openAddBookModal()">+ Suggest a Book</button>
+  </div>
+
   <div class="book-grid">
     <div class="book-card" *ngFor="let book of books">
       <div class="card-image-wrapper">
@@ -14,6 +19,37 @@
         <button class="btn-add-catalog" (click)="addToProgress(book.id)">
           Add to Reading
         </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3>Add New Book to Catalog 📚</h3>
+      
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" [(ngModel)]="newBook.title" name="title" placeholder="Book title...">
+      </div>
+
+      <div class="form-group">
+        <label>Author</label>
+        <input type="text" [(ngModel)]="newBook.author" name="author" placeholder="Author name...">
+      </div>
+
+      <div class="form-group">
+        <label>Total Pages</label>
+        <input type="number" [(ngModel)]="newBook.total_pages" name="pages" placeholder="e.g. 350">
+      </div>
+
+      <div class="form-group">
+        <label>Genre</label>
+        <input type="text" [(ngModel)]="newBook.genre" name="genre" placeholder="e.g. Fantasy">
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-save" (click)="saveBook()">Add to Catalog</button>
+        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
       </div>
     </div>
   </div>

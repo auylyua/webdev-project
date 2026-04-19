@@ -89,4 +89,7 @@ export class ApiService {
 deleteReview(id: number): Observable<any> {
   return this.http.delete(`${this.apiUrl}/reviews/${id}/`, { headers: this.getHeaders() });
 }
+addBook(bookData: any): Observable<any> {
+  return this.http.post(`${this.apiUrl}/books/`, bookData, { headers: this.getHeaders() });
+}
 }
