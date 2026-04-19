@@ -102,4 +102,164 @@
   text-align: center;
   color: #b2bec3;
   padding: 40px 0;
+
+
+
+}
+
+.bio-container {
+  margin-top: 10px;
+  max-width: 500px;
+}
+
+/* Режим просмотра */
+.bio-display {
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.bio-display:hover {
+  background: #f8f9fa;
+}
+
+.user-bio {
+  color: #636e72;
+  font-size: 15px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.edit-hint {
+  font-size: 11px;
+  color: #7ca99a;
+  opacity: 0;
+  transition: 0.3s;
+}
+
+.bio-display:hover .edit-hint {
+  opacity: 1;
+}
+
+/* Режим редактирования */
+.bio-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bio-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #2d3436;
+  resize: vertical; 
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.bio-input:focus {
+  border-color: #7ca99a;
+}
+
+.bio-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Кнопки в био */
+.btn-save {
+  background: #7ca99a;
+  color: white;
+  border: none;
+  padding: 6px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.btn-cancel {
+  background: #f1f2f6;
+  color: #636e72;
+  border: none;
+  padding: 6px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.btn-save:hover { background: #6b9688; }
+.btn-cancel:hover { background: #dfe4ea; }
+
+/* Оверлей (задний фон) */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Затемнение */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Карточка окна */
+.modal-card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #2d3436;
+}
+
+.form-group input, .form-group textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.book-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: white;
+  font-family: inherit;
+  font-size: 14px;
+  color: #2d3436;
+  outline: none;
+  cursor: pointer;
+}
+
+.book-select:focus {
+  border-color: #7ca99a;
 }

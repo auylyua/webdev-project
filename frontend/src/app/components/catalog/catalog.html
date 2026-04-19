@@ -1,11 +1,4 @@
 <div class="catalog-container">
-  <div class="catalog-actions">
-    <div class="search-box">
-      <input type="text" placeholder="Search by title or author..." (input)="onSearch($event)">
-    </div>
-    
-  </div>
-
   <div class="book-grid">
     <div class="book-card" *ngFor="let book of books">
       <div class="card-image-wrapper">

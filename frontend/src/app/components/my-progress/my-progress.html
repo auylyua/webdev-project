@@ -15,9 +15,12 @@
     <div class="book-card" *ngFor="let entry of entries">
       <div class="card-header">
         <span class="status-badge" [ngClass]="entry.status?.toLowerCase()">
-            {{ entry.status | titlecase }}
+          {{ entry.status | titlecase }}
         </span>
-        <div class="book-icon">📖</div>
+        
+        <button class="delete-btn" (click)="deleteEntry(entry.id)" title="Remove from progress">
+          🗑️
+        </button>
       </div>
 
       <div class="book-info">
@@ -42,10 +45,7 @@
       <button class="edit-btn" (click)="openEditModal(entry)">
         Update Details
       </button>
-    </div>
-  </div>
-
-  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    </div> </div> <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
     <div class="modal-window" (click)="$event.stopPropagation()">
       <h2>Update Progress</h2>
       <p class="modal-target">{{ selectedEntry?.book_title }}</p>
@@ -57,13 +57,11 @@
 
       <div class="form-field">
         <label>Status</label>
-        <select [(ngModel)]="editData.status" name ="status">
-        
+        <select [(ngModel)]="editData.status" name="status">
           <option value="planned">Planned</option>
           <option value="reading">Reading</option>
           <option value="finished">Finished</option>
           <option value="dropped">Dropped</option>
-          
         </select>
       </div>
 

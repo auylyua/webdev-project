@@ -49,7 +49,7 @@
 }
 
 .input-group input:focus {
-  border-color: #7ca99a; /* Твой мятный цвет */
+  border-color: #7ca99a; 
   outline: none;
 }
 

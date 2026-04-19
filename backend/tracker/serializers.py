@@ -79,7 +79,7 @@ class ProgressUpdateSerializer(serializers.Serializer):
 
 class NoteSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
-    book_title = serializers.CharField(source='book.title', read_only=True)
+    book_title = serializers.ReadOnlyField(source='book.title')
     
 
     class Meta:

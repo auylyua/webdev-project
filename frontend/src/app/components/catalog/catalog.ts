@@ -47,22 +47,28 @@ export class Catalog implements OnInit {
 
   addToProgress(bookId: number) {
     const token = localStorage.getItem('access');
-    this.router.navigate(['/login']);
+    
     if (!token) {
-      alert('Пожалуйста, войдите в систему!');
+      alert('Please log in to add books to your progress!');
+      this.router.navigate(['/login']);
       return;
     }
 
     
     this.apiService.addToMyProgress(bookId).subscribe({
       next: (response: any) => {
-        alert('Книга добавлена в ваш список прогресса!');
-        console.log('Успех:', response);
+        alert('Book added to your progress list!');
+        console.log('Success:', response);
         this.router.navigate(['/my-progress']);
       },
       error: (err: any) => {
-        alert('Ошибка при добавлении книги. Возможно, она уже есть в списке.');
-        console.error(err);
+        if(err.status === 401) {
+          alert('Session expired. Please log in again.');
+          this.router.navigate(['/login']);
+        } else {
+          alert('Error adding book. It might already be in your list.');
+          console.error(err);
+        }
       }
     });
   }

@@ -1,9 +1,21 @@
 <div class="profile-container">
   <div class="user-header">
-    <div class="avatar-large">A</div>
+    <div class="avatar-large">{{ username.charAt(0) || 'U' }}</div>
     <div class="user-info">
-      <h2>{{ user.email }}</h2>
-      <span class="badge">Full-Stack Developer</span>
+      <h2>{{ username }}</h2>
+      <div class="bio-container">
+        <div *ngIf="!isEditingBio" (click)="toggleEdit()" class="bio-display">
+          <p class="user-bio">{{ bio || 'i am ' + username }}</p>
+          <span class="edit-hint">Click to edit bio</span>
+        </div>
+        <div *ngIf="isEditingBio" class="bio-edit-form">
+          <textarea [(ngModel)]="bio" class="bio-input" rows="3"></textarea>
+          <div class="bio-actions">
+            <button class="btn-save" (click)="saveBio()">Save</button>
+            <button class="btn-cancel" (click)="toggleEdit()">Cancel</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -11,40 +23,118 @@
     <section class="profile-section">
       <div class="section-header">
         <h3>My Notes 📝</h3>
-        <button class="btn-action" (click)="goToCatalog()">Add Note</button>
+        <button class="btn-action" (click)="openNoteModal()">Add Note</button>
       </div>
-      
       <div class="content-list">
         <div class="item-card" *ngFor="let note of notes">
-          <div class="item-title">{{ note.book_title }}</div>
+          <div class="item-title">
+            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+              <div>
+                <strong>{{ note.book_title || 'Book' }}</strong> 
+                <span class="page-tag">(p. {{ note.page_number }})</span>
+              </div>
+              <button (click)="deleteNote(note.id)" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">
+                🗑️
+              </button>
+            </div>
+          </div>
           <p class="item-text">{{ note.content }}</p>
-          <span class="item-date">{{ note.created_at | date:'shortDate' }}</span>
         </div>
-        
         <div *ngIf="notes.length === 0" class="empty-state">
-          <p>No notes found. Add your first note from the catalog!</p>
+          No notes found.
         </div>
       </div>
     </section>
 
     <section class="profile-section">
-      <div class="section-header">
-        <h3>My Reviews ⭐</h3>
-      </div>
-      
-      <div class="content-list">
-        <div class="item-card" *ngFor="let review of reviews">
-          <div class="item-header">
-            <span class="item-title">{{ review.book_title }}</span>
-            <span class="rating-badge">{{ review.rating }}/5 ★</span>
-          </div>
-          <p class="item-text">{{ review.comment }}</p>
+  <div class="section-header">
+    <h3>My Reviews ⭐</h3>
+    <button class="btn-action" (click)="openReviewModal()">Add Review</button>
+  </div>
+  <div class="content-list">
+    <div class="item-card" *ngFor="let review of reviews">
+      <div class="item-title">
+        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+          <strong>{{ review.book_title }}</strong>
+          
+          <button (click)="deleteReview(review.id)" 
+                  style="background: none; border: none; cursor: pointer; font-size: 1.2rem; opacity: 0.6;">
+            🗑️
+          </button>
         </div>
+      </div>
+      <div class="rating-badge">{{ review.rating }}/5 ★</div>
+      <p class="item-text">{{ review.comment }}</p>
+    </div>
 
-        <div *ngIf="reviews.length === 0" class="empty-state">
-          <p>You haven't left any reviews yet.</p>
-        </div>
+    <div *ngIf="reviews.length === 0" class="empty-state">
+      No reviews found.
+    </div>
+  </div>
+</section>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isNoteModalOpen">
+    <div class="modal-card">
+      <h3>New Reading Note 📝</h3>
+      <div class="form-group">
+        <label>Book Title</label>
+        <select [(ngModel)]="newNote.book" class="book-select">
+  <option value="" disabled selected>Select a book</option>
+  <option *ngFor="let entry of userBooks" [value]="entry.book">
+    {{ entry.book_title }}
+  </option>
+</select>
       </div>
-    </section>
+      <div class="form-group">
+  <label>Page Number</label>
+  <input 
+    type="number" 
+    [(ngModel)]="newNote.page_number" 
+    placeholder="Type page..."
+    class="page-input"
+    autocomplete="one-time-code"
+    name="page_number_{{username}}"
+    id="page_input_field"
+    readonly 
+    onfocus="this.removeAttribute('readonly');">
+</div>
+      <div class="form-group">
+        <label>Note Content</label>
+        <textarea [(ngModel)]="newNote.text" placeholder="Your thoughts..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-save" (click)="saveNote()">Save Note</button>
+        <button class="btn-cancel" (click)="closeNoteModal()">Cancel</button>
+      </div>
+    </div>
   </div>
 </div>
+
+<div class="modal-overlay" *ngIf="isReviewModalOpen">
+  <div class="modal-card">
+    <h3>New Review ⭐</h3>
+    <div class="form-group">
+      <label>Book</label>
+      <select [(ngModel)]="newReview.book" class="book-select">
+        <option value="" disabled selected>Select a book</option>
+        <option *ngFor="let entry of userBooks" [value]="entry.book">
+          {{ entry.book_title }}
+        </option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Rating (1-5)</label>
+      <input type="number" [(ngModel)]="newReview.rating" min="1" max="5">
+    </div>
+    <div class="form-group">
+      <label>Comment</label>
+      <textarea [(ngModel)]="newReview.comment" placeholder="What did you think?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" (click)="saveReview()">Save Review</button>
+      <button class="btn-cancel" (click)="isReviewModalOpen = false">Cancel</button>
+    </div>
+  </div>
+</div>
+

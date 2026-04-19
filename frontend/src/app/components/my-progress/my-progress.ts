@@ -21,19 +21,24 @@ export class MyProgress implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
-    
+    this.loadEntries();
+  }
+
+  loadEntries() {
     this.apiService.getReadingEntries().subscribe({
       next: (data: any) => {
         this.entries = data;
         this.cdr.detectChanges();
       },
-      error: (err: any) => console.error('Ошибка API:', err)
+      error: (err: any) => console.error('Ошибка загрузки прогресса:', err)
     });
   }
 
+  
+
   openEditModal(entry: any) {
     this.selectedEntry = entry;
-    this.editData = { ...entry };
+    this.editData = { ...entry }; 
     this.isModalOpen = true;
   }
 
@@ -43,13 +48,30 @@ export class MyProgress implements OnInit {
   }
 
   saveChanges() {
-    
     this.apiService.updateReadingEntry(this.editData.id, this.editData).subscribe({
       next: () => {
         this.closeModal();
-        this.ngOnInit(); 
+        this.loadEntries(); 
       },
-      error: (err: any) => console.error('Ошибка сохранения:', err)
+      error: (err: any) => console.error('Error while saving:', err)
     });
+  }
+
+  
+
+  deleteEntry(id: number) {
+    if (confirm('Are you sure you want to remove this book from your list?')) {
+      this.apiService.deleteReadingEntry(id).subscribe({
+        next: () => {
+          
+          this.entries = this.entries.filter(entry => entry.id !== id);
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          console.error('Error while deleting:', err);
+          alert('Failed to delete the book.');
+        }
+      });
+    }
   }
 }

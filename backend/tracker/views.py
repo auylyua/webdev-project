@@ -216,10 +216,13 @@ class ReadingEntryDetailAPIView(APIView):
 # --- PROFILE (Notes & Reviews) ---
 
 
-class NoteListCreateAPIView(APIView):
+class NoteListCreateAPIView(generics.ListCreateAPIView): 
+    serializer_class = NoteSerializer
     permission_classes = [IsAuthenticated]
+
     def get_queryset(self):
         return Note.objects.filter(user=self.request.user).order_by('-created_at')
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
@@ -246,6 +249,15 @@ class ReviewListCreateAPIView(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ReviewDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+       
+        return Review.objects.filter(user=self.request.user)
 
 class MyProfileAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -275,6 +287,14 @@ class PublicUserProfileAPIView(APIView):
         serializer = PublicUserSerializer(user)
         return Response(serializer.data)
 
+
+class NoteDetailAPIView(generics.RetrieveUpdateDestroyAPIView): 
+    queryset = Note.objects.all()
+    serializer_class = NoteSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Note.objects.filter(user=self.request.user)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
