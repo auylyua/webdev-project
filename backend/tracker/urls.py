@@ -1,4 +1,5 @@
 from django.urls import path
+from .views import home_stats
 from . import views
 from .views import (
     user_reviews_view,
@@ -16,9 +17,9 @@ urlpatterns = [
     path('login/', login_view),
     path('logout/', logout_view),
     path('books/', BookListCreateAPIView.as_view()),
-    path('books/<int:pk>/', BookDetailAPIView.as_view()),
     path('books/top/', top_books_view),
     path('books/currently-reading/', currently_reading_view),
+    path('books/<int:pk>/', BookDetailAPIView.as_view()),
     path('entries/', ReadingEntryListCreateAPIView.as_view()),
     path('entries/<int:pk>/', ReadingEntryDetailAPIView.as_view()),
     path('notes/', NoteListCreateAPIView.as_view()),
@@ -33,4 +34,5 @@ urlpatterns = [
     path('collections/<int:pk>/books/<int:book_id>/', collection_book_view),
     path('profile/reviews/', views.user_reviews_view, name='user-reviews'),
     path('notes/<int:pk>/', views.NoteDetailAPIView.as_view()),
+    path('home-stats/', home_stats),
 ]
