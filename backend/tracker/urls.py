@@ -40,7 +40,7 @@ urlpatterns = [
     path('books/currently-reading/', currently_reading_view),
     path('books/<int:pk>/', BookDetailAPIView.as_view()),
     path('books/<int:pk>/reviews/', book_reviews_view),
-
+    
     path('entries/', ReadingEntryListCreateAPIView.as_view()),
     path('entries/<int:pk>/', ReadingEntryDetailAPIView.as_view()),
 

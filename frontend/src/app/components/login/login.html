@@ -1,3 +1,4 @@
+
 <div class="page-container">
   <div class="auth-section">
     <div class="auth-box">
@@ -36,10 +37,13 @@
           <div *ngIf="errorMessage" style="color: #dc2626; margin-top: 12px; font-size: 14px; text-align: center;">
             {{ errorMessage }}
           </div>
+          <p *ngIf="errorMessage" style="color: red; font-size: 14px; margin-top: 10px;">
+            {{ errorMessage }}
+          </p>
         </form>
 
         <div class="footer-links">
-          <a *ngIf="isLoginMode" href="#">Forgot your password?</a>
+          
           <p>{{ isLoginMode ? "Don't have an account?" : "Already have an account?" }} 
              <span (click)="setMode(!isLoginMode)" style="cursor: pointer; color: #7ca99a; font-weight: bold;">
                {{ isLoginMode ? 'Register' : 'Sign In' }}
