@@ -17,20 +17,26 @@
         <span class="status-badge" [ngClass]="entry.status?.toLowerCase()">
           {{ entry.status | titlecase }}
         </span>
-        
+
         <button class="delete-btn" (click)="deleteEntry(entry.id)" title="Remove from progress">
           🗑️
         </button>
       </div>
 
       <div class="book-info">
-        <h3>{{ entry.book_title || 'Untitled Book' }}</h3>
+        <h3 class="clickable-book" [routerLink]="['/books', entry.book]">
+          {{ entry.book_title || 'Untitled Book' }}
+        </h3>
         <p class="entry-id">Entry ID: #{{ entry.id }}</p>
-        
-        <div class="rating-stars" *ngIf="entry.rating">
-          <span class="star">⭐</span> {{ entry.rating }}/10
-        </div>
+        <div class="rating-stars">
+          <span
+          *ngFor="let star of [1,2,3,4,5]"
+          class="card-star"
+          [class.filled]="star <= (entry.rating || 0)">
+          ★
+        </span>
       </div>
+    </div>
 
       <div class="progress-wrapper">
         <div class="progress-labels">
@@ -38,26 +44,40 @@
           <span>{{ entry.current_page }} pages</span>
         </div>
         <div class="progress-bar-bg">
-          <div class="progress-fill" [style.width.%]="(entry.current_page / 500) * 100"></div>
+          <div
+            class="progress-fill"
+            [style.width.%]="entry.total_pages ? (entry.current_page / entry.total_pages) * 100 : 0">
+          </div>
         </div>
       </div>
 
       <button class="edit-btn" (click)="openEditModal(entry)">
         Update Details
       </button>
-    </div> </div> <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
     <div class="modal-window" (click)="$event.stopPropagation()">
       <h2>Update Progress</h2>
       <p class="modal-target">{{ selectedEntry?.book_title }}</p>
 
       <div class="form-field">
-        <label>Current Page</label>
-        <input type="number" [(ngModel)]="editData.current_page" placeholder="e.g. 124">
+        <label>
+          Page: <strong>{{ editData.current_page }}</strong> / {{ selectedEntry?.total_pages || '?' }}
+        </label>
+        <input
+          type="range"
+          min="0"
+          [max]="selectedEntry?.total_pages || 100"
+          [(ngModel)]="editData.current_page"
+          (ngModelChange)="onPageChange()"
+          class="page-slider">
       </div>
 
       <div class="form-field">
         <label>Status</label>
-        <select [(ngModel)]="editData.status" name="status">
+        <select [(ngModel)]="editData.status" name="status" (ngModelChange)="onStatusChange()">
           <option value="planned">Planned</option>
           <option value="reading">Reading</option>
           <option value="finished">Finished</option>
@@ -66,14 +86,30 @@
       </div>
 
       <div class="form-field">
-        <label>Rating: {{ editData.rating }}</label>
-        <input type="range" min="0" max="10" [(ngModel)]="editData.rating">
+        <label>Your Rating</label>
+        <div class="stars-row">
+          <button
+          type="button"
+          class="star-btn"
+          *ngFor="let star of [1,2,3,4,5]"
+          [class.active]="star <= editData.rating"
+          (click)="setEditRating(star)">
+          ★
+        </button>
       </div>
-
-      <div class="modal-footer">
-        <button class="btn-cancel" (click)="closeModal()">Cancel</button>
-        <button class="btn-save" (click)="saveChanges()">Save Changes</button>
-      </div>
+    </div>
+    <div class="form-field" *ngIf="editData.rating > 0">
+      <label>Your Review</label>
+      <textarea
+      [(ngModel)]="editData.comment"
+      placeholder="Write your thoughts about this book..."
+      class="review-textarea">
+    </textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-cancel" (click)="closeModal()">Cancel</button>
+    <button class="btn-save" (click)="saveChanges()">Save Changes</button>
+  </div>
     </div>
   </div>
 </div>

@@ -4,47 +4,158 @@
     <button class="btn-primary" (click)="openAddBookModal()">+ Suggest a Book</button>
   </div>
 
-  <div class="book-grid">
-    <div class="book-card" *ngFor="let book of books">
-      <div class="card-image-wrapper">
-         <span class="genre-tag">{{ book.genre || 'Book' }}</span>
-         <div class="icon-placeholder">📖</div>
-      </div>
-      <div class="card-content">
-        <h3>{{ book.title }}</h3>
-        <p class="author">by {{ book.author }}</p>
-        <div class="book-meta">
-          <span>📄 {{ book.total_pages }} pages</span>
+  <div class="catalog-actions">
+    <div class="search-box">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Search by title or author">
+    </div>
+
+    <select class="genre-filter" [(ngModel)]="selectedGenre" (change)="applyFilters()">
+      <option value="">All genres</option>
+      <option value="Fantasy">Fantasy</option>
+      <option value="Classic">Classic</option>
+      <option value="Drama">Drama</option>
+      <option value="Romance">Romance</option>
+      <option value="Adventure">Adventure</option>
+      <option value="Science Fiction">Science Fiction</option>
+      <option value="Young Adult">Young Adult</option>
+      <option value="Mystery">Mystery</option>
+      <option value="Thriller">Thriller</option>
+    </select>
+
+    <select class="genre-filter" [(ngModel)]="selectedSort" (change)="applyFilters()">
+      <option value="">Sort</option>
+      <option value="rating">By rating</option>
+      <option value="year">By year</option>
+      <option value="title">By title</option>
+    </select>
+
+    <button class="btn-primary" (click)="applyFilters()">Apply</button>
+  </div>
+
+  <section class="catalog-block">
+    <h2>Currently Reading</h2>
+    <div class="horizontal-scroll">
+      <div class="book-card compact-card" *ngFor="let book of currentlyReading" (click)="openBook(book.id)">
+        <div class="card-image-wrapper compact-image">
+          <img *ngIf="book.cover_image; else noCover1" [src]="book.cover_image" [alt]="book.title" class="book-cover">
+          <ng-template #noCover1>
+            <div class="icon-placeholder">📖</div>
+          </ng-template>
         </div>
-        <button class="btn-add-catalog" (click)="addToProgress(book.id)">
-          Add to Reading
-        </button>
+        <div class="card-content compact-content">
+          <h3>{{ book.title }}</h3>
+          <p class="author">by {{ book.author }}</p>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <section class="catalog-block">
+    <div class="section-title-row">
+      <h2>Top 10 Books</h2>
+    </div>
+
+    <div class="slider-wrapper">
+      <button class="slider-btn left" (click)="scrollLeft()">‹</button>
+
+      <div class="top-books-row" #scrollContainer>
+        <div class="book-card compact-card" *ngFor="let book of topBooks" (click)="openBook(book.id)">
+          <div class="card-image-wrapper compact-image">
+            <img *ngIf="book.cover_image; else noCover2" [src]="book.cover_image" [alt]="book.title" class="book-cover">
+            <ng-template #noCover2>
+              <div class="icon-placeholder">📖</div>
+            </ng-template>
+          </div>
+          <div class="card-content compact-content">
+            <h3>{{ book.title }}</h3>
+            <p class="author">by {{ book.author }}</p>
+            <div class="book-meta compact-meta">
+              <span>★ {{ book.average_rating || '—' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="slider-btn right" (click)="scrollRight()">›</button>
+    </div>
+  </section>
+
+  <section class="catalog-block">
+    <h2>All Books</h2>
+    <div class="book-grid">
+      <div class="book-card" *ngFor="let book of books" (click)="openBook(book.id)">
+        <div class="card-image-wrapper">
+          <img *ngIf="book.cover_image; else noCover3" [src]="book.cover_image" [alt]="book.title" class="book-cover">
+          <ng-template #noCover3>
+            <div class="icon-placeholder">📖</div>
+          </ng-template>
+        </div>
+
+        <div class="card-content">
+          <h3>{{ book.title }}</h3>
+          <p class="author">by {{ book.author }}</p>
+
+          <div class="genre-row">
+            <span class="genre-tag" *ngFor="let genre of getGenres(book.genre)">
+              {{ genre }}
+            </span>
+          </div>
+
+          <div class="book-meta">
+            <span>📄 {{ book.total_pages }} pages</span>
+            <span>★ {{ book.average_rating || '—' }}</span>
+          </div>
+
+          <button class="btn-add-catalog" (click)="addToProgress(book.id, $event)">
+            Add to plans
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <h3>Add New Book to Catalog 📚</h3>
-      
+
       <div class="form-group">
         <label>Title</label>
-        <input type="text" [(ngModel)]="newBook.title" name="title" placeholder="Book title...">
+        <input type="text" [(ngModel)]="newBook.title">
       </div>
 
       <div class="form-group">
         <label>Author</label>
-        <input type="text" [(ngModel)]="newBook.author" name="author" placeholder="Author name...">
+        <input type="text" [(ngModel)]="newBook.author">
       </div>
 
       <div class="form-group">
         <label>Total Pages</label>
-        <input type="number" [(ngModel)]="newBook.total_pages" name="pages" placeholder="e.g. 350">
+        <input type="number" [(ngModel)]="newBook.total_pages">
       </div>
 
       <div class="form-group">
         <label>Genre</label>
-        <input type="text" [(ngModel)]="newBook.genre" name="genre" placeholder="e.g. Fantasy">
+        <input type="text" [(ngModel)]="newBook.genre">
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" [(ngModel)]="newBook.description">
+      </div>
+
+      <div class="form-group">
+        <label>Published Year</label>
+        <input type="number" [(ngModel)]="newBook.published_year">
+      </div>
+
+      <div class="form-group">
+        <label>Cover Image URL</label>
+        <input type="text" [(ngModel)]="newBook.cover_image">
+      </div>
+
+      <div class="form-group">
+        <label>Read Link</label>
+        <input type="text" [(ngModel)]="newBook.read_link">
       </div>
 
       <div class="modal-actions">

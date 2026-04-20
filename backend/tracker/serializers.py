@@ -4,7 +4,6 @@ from rest_framework import serializers
 from .models import Book, ReadingEntry, Note, Review, UserProfile, Collection
 
 
-
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
 
@@ -37,7 +36,6 @@ class LoginSerializer(serializers.Serializer):
         return data
 
 
-
 class BookSerializer(serializers.ModelSerializer):
     average_rating = serializers.SerializerMethodField()
     reviews_count = serializers.SerializerMethodField()
@@ -46,7 +44,7 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = [
             'id', 'title', 'author', 'total_pages', 'genre',
-            'description', 'published_year', 'cover_image',
+            'description', 'published_year', 'cover_image', 'read_link',
             'average_rating', 'reviews_count', 'created_at',
         ]
 
@@ -57,30 +55,35 @@ class BookSerializer(serializers.ModelSerializer):
         return obj.reviews.count()
 
 
-
 class ReadingEntrySerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     book_title = serializers.CharField(source='book.title', read_only=True)
     total_pages = serializers.IntegerField(source='book.total_pages', read_only=True)
+    cover_image = serializers.CharField(source='book.cover_image', read_only=True)
 
     class Meta:
         model = ReadingEntry
         fields = [
-            'id', 'user', 'book', 'book_title', 'total_pages',
-            'current_page', 'status', 'started_at', 'finished_at',
+            'id', 'user', 'book', 'book_title', 'total_pages', 'cover_image',
+            'current_page', 'status', 'started_at', 'finished_at', 'rating',
         ]
 
 
-class ProgressUpdateSerializer(serializers.Serializer):
-    current_page = serializers.IntegerField(min_value=0)
-    status = serializers.ChoiceField(choices=ReadingEntry.STATUS_CHOICES)
+class PublicReadingEntrySerializer(serializers.ModelSerializer):
+    book = BookSerializer(read_only=True)
+    user = serializers.StringRelatedField(read_only=True)
 
+    class Meta:
+        model = ReadingEntry
+        fields = [
+            'id', 'user', 'book', 'current_page', 'status',
+            'started_at', 'finished_at', 'rating',
+        ]
 
 
 class NoteSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     book_title = serializers.ReadOnlyField(source='book.title')
-    
 
     class Meta:
         model = Note
@@ -90,15 +93,15 @@ class NoteSerializer(serializers.ModelSerializer):
         ]
 
 
-
 class ReviewSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
     book_title = serializers.CharField(source='book.title', read_only=True)
 
     class Meta:
         model = Review
         fields = [
-            'id', 'user', 'book', 'book_title',
+            'id', 'user', 'user_id', 'book', 'book_title',
             'rating', 'comment', 'created_at',
         ]
 
@@ -106,7 +109,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         if value < 1 or value > 5:
             raise serializers.ValidationError("Rating must be between 1 and 5.")
         return value
-
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -123,12 +125,13 @@ class PublicUserSerializer(serializers.ModelSerializer):
     avatar_url = serializers.CharField(source='profile.avatar_url', read_only=True)
     reviews_count = serializers.SerializerMethodField()
     collections_count = serializers.SerializerMethodField()
+    entries_count = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'bio', 'avatar_url',
-            'reviews_count', 'collections_count',
+            'reviews_count', 'collections_count', 'entries_count',
         ]
 
     def get_reviews_count(self, obj):
@@ -137,13 +140,19 @@ class PublicUserSerializer(serializers.ModelSerializer):
     def get_collections_count(self, obj):
         return obj.collections.filter(is_public=True).count()
 
+    def get_entries_count(self, obj):
+        return obj.reading_entries.count()
+
 
 class CollectionSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     books = BookSerializer(many=True, read_only=True)
     book_ids = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Book.objects.all(),
-        write_only=True, source='books', required=False
+        many=True,
+        queryset=Book.objects.all(),
+        write_only=True,
+        source='books',
+        required=False
     )
     books_count = serializers.SerializerMethodField()
 

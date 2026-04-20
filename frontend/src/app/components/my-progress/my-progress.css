@@ -14,7 +14,6 @@
 .stats { color: #636e72; font-size: 1.1rem; margin-bottom: 40px; }
 .stats span { color: #00b894; font-weight: 700; }
 
-/* Grid Layout */
 .book-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -137,7 +136,6 @@
 
 .edit-btn:hover { background: #00b894; color: white; }
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0;
@@ -199,4 +197,125 @@
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.page-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 10px;
+  background: #e5e7eb;
+  outline: none;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.page-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #7ca99a;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.page-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #7ca99a;
+  cursor: pointer;
+  border: none;
+}
+
+.stars-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.star-btn {
+  background: transparent;
+  border: none;
+  color: #d1d5db;
+  font-size: 32px;
+  cursor: pointer;
+  transition: color 0.15s;
+  padding: 0;
+  line-height: 1;
+}
+
+.star-btn.active {
+  color: #f59e0b;
+}
+
+.star-btn:hover {
+  color: #f59e0b;
+}
+.rating-stars {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.card-star {
+  font-size: 18px;
+  color: #d1d5db;
+}
+
+.card-star.filled {
+  color: #f59e0b;
+}
+.rating-stars.clickable {
+  cursor: pointer;
+}
+
+.rating-stars.clickable .card-star:hover {
+  transform: scale(1.2);
+}
+.clickable-book {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.clickable-book:hover {
+  color: #00b894;
+}
+
+.rating-stars.clickable {
+  cursor: pointer;
+}
+
+.rating-stars.clickable .card-star:hover {
+  transform: scale(1.15);
+}
+
+.review-textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  border: 1px solid #dfe6e9;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.review-textarea {
+  width: 100%;
+  min-height: 100px;
+  resize: vertical;
+  border: 1px solid #dfe6e9;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.review-textarea:focus {
+  outline: none;
+  border-color: #7ca99a;
+  box-shadow: 0 0 0 2px rgba(124, 169, 154, 0.15);
 }

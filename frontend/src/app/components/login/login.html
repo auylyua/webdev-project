@@ -34,6 +34,9 @@
           <button type="submit" class="main-btn">
             {{ isLoginMode ? 'Sign In' : 'Register' }}
           </button>
+          <div *ngIf="errorMessage" style="color: #dc2626; margin-top: 12px; font-size: 14px; text-align: center;">
+            {{ errorMessage }}
+          </div>
         </form>
 
         <div class="footer-links">

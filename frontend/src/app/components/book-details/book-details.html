@@ -1,0 +1,121 @@
+<div class="details-page" *ngIf="book">
+  <div class="details-layout">
+    <aside class="left-panel">
+      <div class="cover-card">
+        <img *ngIf="book.cover_image; else noCover" [src]="book.cover_image" [alt]="book.title" class="book-cover">
+        <ng-template #noCover>
+          <div class="cover-placeholder">📚</div>
+        </ng-template>
+
+        <button
+          class="status-button"
+          [ngClass]="getStatusClass(currentEntry?.status || null)"
+          (click)="handleStatusButton()">
+          {{ getStatusLabel(currentEntry?.status || null) }}
+        </button>
+
+        <div class="status-menu" *ngIf="isStatusMenuOpen">
+          <button class="status-option planned" (click)="changeStatus('planned')">Planned</button>
+          <button class="status-option reading" (click)="changeStatus('reading')">Reading</button>
+          <button class="status-option finished" (click)="changeStatus('finished')">Finished</button>
+          <button class="status-option dropped" (click)="changeStatus('dropped')">Dropped</button>
+        </div>
+
+        <a *ngIf="book.read_link" [href]="book.read_link" target="_blank" class="read-link">
+          Read online
+        </a>
+      </div>
+
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Author</span>
+          <span>{{ book.author }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Year</span>
+          <span>{{ book.published_year || '—' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Pages</span>
+          <span>{{ book.total_pages }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Rating</span>
+          <span>{{ book.average_rating || 'No rating yet' }}</span>
+        </div>
+      </div>
+    </aside>
+
+    <section class="main-panel">
+      <div class="title-row">
+        <div>
+          <h1>{{ book.title }}</h1>
+          <p class="subtitle">{{ book.author }}</p>
+        </div>
+
+        <button class="rate-button" (click)="openRatingModal()">
+          ★ Rate
+        </button>
+      </div>
+
+      <div class="genre-list">
+        <span class="genre-chip" *ngFor="let genre of getGenres()">
+          {{ genre }}
+        </span>
+      </div>
+
+      <div class="description-card">
+        <h3>About</h3>
+        <p>{{ book.description || 'No description yet.' }}</p>
+      </div>
+
+      <div class="reviews-card">
+        <div class="reviews-header">
+          <h3>Reviews</h3>
+          <span>{{ reviews.length }}</span>
+        </div>
+
+        <div class="review-item" *ngFor="let review of reviews">
+            <div class="review-top">
+                <a class="reviewer-link" [routerLink]="['/users', review.user_id]">
+                    <div class="reviewer-avatar">{{ review.user?.charAt(0)?.toUpperCase() }}</div>
+                    <strong>{{ review.user }}</strong>
+                </a>
+                <span class="review-rating">{{ review.rating }}/5 ★</span>
+            </div>
+            <p>{{ review.comment }}</p>
+        </div>
+
+        <div class="empty-reviews" *ngIf="reviews.length === 0">
+          No reviews yet.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isRatingModalOpen" (click)="closeRatingModal()">
+    <div class="rating-modal" (click)="$event.stopPropagation()">
+      <h3>Rate this book</h3>
+
+      <div class="stars-row">
+        <button
+          type="button"
+          class="star-btn"
+          *ngFor="let star of [1,2,3,4,5]"
+          [class.active]="star <= newReview.rating"
+          (click)="setRating(star)">
+          ★
+        </button>
+      </div>
+
+      <textarea
+        [(ngModel)]="newReview.comment"
+        placeholder="Write your review..."></textarea>
+
+      <div class="modal-actions">
+        <button class="cancel-btn" (click)="closeRatingModal()">Cancel</button>
+        <button class="save-btn" (click)="saveReview()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>

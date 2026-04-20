@@ -1,8 +1,8 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core'; 
+import { Component, OnInit, inject, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { RouterModule, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-catalog',
@@ -13,30 +13,74 @@ import { FormsModule } from '@angular/forms';
 })
 export class Catalog implements OnInit {
   private apiService = inject(ApiService);
-  private cdr = inject(ChangeDetectorRef); 
+  private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef;
+
   books: any[] = [];
+  topBooks: any[] = [];
+  currentlyReading: any[] = [];
+
+  searchTerm = '';
+  selectedGenre = '';
+  selectedSort = '';
 
   isModalOpen = false;
-  newBook = { title: '', author: '', total_pages: null as number | null, genre: '' };
+  newBook = {
+    title: '',
+    author: '',
+    total_pages: null as number | null,
+    genre: '',
+    description: '',
+    published_year: null as number | null,
+    cover_image: '',
+    read_link: ''
+  };
 
   ngOnInit() {
     this.loadBooks();
   }
 
   loadBooks() {
-    this.apiService.getBooks().subscribe({
+    this.apiService.getBooksFiltered({
+      search: this.searchTerm,
+      genre: this.selectedGenre,
+      sort: this.selectedSort
+    }).subscribe({
       next: (data: any[]) => {
         this.books = data;
-        this.cdr.detectChanges(); 
+        this.currentlyReading = data.slice(0, 6);
+        this.topBooks = [...data]
+          .sort((a, b) => {
+            const ratingA = a.average_rating || 0;
+            const ratingB = b.average_rating || 0;
+            return ratingB - ratingA;
+          })
+          .slice(0, 10);
+
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('Ошибка при получении книг:', err)
+      error: (err) => console.error('Error loading books:', err)
     });
   }
 
-  
-  addToProgress(bookId: number) {
+  applyFilters() {
+    this.loadBooks();
+  }
+
+  openBook(id: number) {
+    this.router.navigate(['/books', id]);
+  }
+
+  getGenres(genre: string): string[] {
+    if (!genre) return [];
+    return genre.split(',').map(g => g.trim()).filter(g => g);
+  }
+
+  addToProgress(bookId: number, event?: Event) {
+    event?.stopPropagation();
+
     const token = localStorage.getItem('access');
     if (!token) {
       alert('Please log in to add books!');
@@ -47,20 +91,29 @@ export class Catalog implements OnInit {
     this.apiService.addToMyProgress(bookId).subscribe({
       next: () => {
         alert('Book added to your progress!');
-        this.router.navigate(['/my-progress']);
       },
-      error: (err) => alert('Error: Maybe it is already in your list?')
+      error: () => {
+        alert('Maybe this book is already in your list.');
+      }
     });
   }
 
-  
   openAddBookModal() {
     this.isModalOpen = true;
   }
 
   closeModal() {
     this.isModalOpen = false;
-    this.newBook = { title: '', author: '', total_pages: null, genre: '' };
+    this.newBook = {
+      title: '',
+      author: '',
+      total_pages: null,
+      genre: '',
+      description: '',
+      published_year: null,
+      cover_image: '',
+      read_link: ''
+    };
   }
 
   saveBook() {
@@ -71,15 +124,28 @@ export class Catalog implements OnInit {
 
     this.apiService.addBook(this.newBook).subscribe({
       next: (res) => {
-        this.books.push(res); 
+        this.books.unshift(res);
         this.closeModal();
-        alert('Book successfully added to catalog!');
         this.cdr.detectChanges();
       },
       error: (err) => {
         console.error(err);
-        alert('Error adding book to catalog');
+        alert('Error adding book');
       }
+    });
+  }
+
+  scrollLeft() {
+    this.scrollContainer?.nativeElement.scrollBy({
+      left: -500,
+      behavior: 'smooth'
+    });
+  }
+
+  scrollRight() {
+    this.scrollContainer?.nativeElement.scrollBy({
+      left: 500,
+      behavior: 'smooth'
     });
   }
 }

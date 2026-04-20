@@ -26,22 +26,14 @@ export class Login {
     this.errorMessage = '';
   }
 
-  onSubmit() {
+onSubmit() {
     if (this.isLoginMode) {
-     
       this.api.login({ username: this.username, password: this.password }).subscribe({
         next: (res) => {
-          
           localStorage.setItem('access', res.access);
           localStorage.setItem('refresh', res.refresh);
-          
-          const displayName = res.username || this.username;
-          localStorage.setItem('username', displayName);
-
-          console.log('Login successful for:', displayName);
-
-          // Navigate to progress page
-          this.router.navigate(['/my-progress']);
+          localStorage.setItem('username', res.username || this.username);
+          this.router.navigate(['/catalog']);
         },
         error: (err) => {
           console.error('Login failed', err);
@@ -49,19 +41,26 @@ export class Login {
         }
       });
     } else {
-      
-      this.api.register({ 
-        username: this.username, 
-        email: this.email, 
-        password: this.password 
+      this.api.register({
+        username: this.username,
+        email: this.email,
+        password: this.password
       }).subscribe({
-        next: () => {
-          alert('Registration successful! Please log in now.');
-          this.isLoginMode = true; 
+        next: (res) => {
+          localStorage.setItem('access', res.access);
+          localStorage.setItem('refresh', res.refresh);
+          localStorage.setItem('username', res.username || this.username);
+          this.router.navigate(['/catalog']);
         },
         error: (err) => {
           console.error('Registration failed', err);
-          this.errorMessage = 'Registration failed. Username might be taken.';
+          if (err.error?.username) {
+            this.errorMessage = 'This username is already taken.';
+          } else if (err.error?.password) {
+            this.errorMessage = 'Password must be at least 6 characters.';
+          } else {
+            this.errorMessage = 'Registration failed. Try again.';
+          }
         }
       });
     }

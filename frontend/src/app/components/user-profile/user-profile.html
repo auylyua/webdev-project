@@ -1,0 +1,158 @@
+<div class="profile-page" *ngIf="user">
+  <div class="profile-header">
+    <div class="avatar-circle">
+      <img *ngIf="user.avatar_url; else noAvatar" [src]="user.avatar_url" class="avatar-img">
+      <ng-template #noAvatar>
+        <span class="avatar-letter">{{ user.username?.charAt(0)?.toUpperCase() }}</span>
+      </ng-template>
+    </div>
+
+    <div class="profile-info">
+      <h1>{{ user.username }}</h1>
+      <p class="bio">{{ user.bio || 'No bio yet.' }}</p>
+      <div class="profile-stats">
+        <div class="stat">
+          <span class="stat-number">{{ user.reviews_count }}</span>
+          <span class="stat-label">Reviews</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">{{ user.collections_count }}</span>
+          <span class="stat-label">Collections</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">{{ user.entries_count }}</span>
+          <span class="stat-label">Books</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="setTab('reviews')">
+      Reviews
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'collections'" (click)="setTab('collections')">
+      Collections
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'reading'" (click)="setTab('reading')">
+      Reading
+    </button>
+  </div>
+
+  <div class="tab-content">
+    <div *ngIf="activeTab === 'reviews'">
+      <div class="empty" *ngIf="reviews.length === 0">No reviews yet.</div>
+      <div class="review-card" *ngFor="let review of reviews">
+        <div class="review-top">
+          <strong class="book-link" [routerLink]="['/books', review.book]">{{ review.book_title }}</strong>
+          <span class="stars">{{ review.rating }}/5 ★</span>
+        </div>
+        <p>{{ review.comment }}</p>
+        <span class="review-date">{{ review.created_at | date:'mediumDate' }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'collections'">
+      <div class="empty" *ngIf="collections.length === 0">No public collections yet.</div>
+      <div class="collections-row">
+        <div class="col-card" *ngFor="let col of collections" (click)="openCollectionModal(col)">
+          <button
+            class="col-like-btn"
+            [class.active]="isCollectionLiked(col.id)"
+            (click)="toggleCollectionLike($event, col.id)">
+            {{ isCollectionLiked(col.id) ? '♥' : '♡' }}
+          </button>
+
+          <div class="col-covers">
+            <ng-container *ngIf="getColCovers(col).length > 0; else noCovers">
+              <img
+                *ngFor="let img of getColCovers(col); let i = index"
+                [src]="img"
+                class="col-cover"
+                [style.z-index]="getColCovers(col).length - i"
+                [style.transform]="'rotate(' + (i * 6 - 6) + 'deg) translateX(' + (i * 14 - 14) + 'px)'">
+            </ng-container>
+            <ng-template #noCovers>
+              <div class="col-cover-placeholder">📚</div>
+            </ng-template>
+          </div>
+
+          <div class="col-info">
+            <strong>{{ col.title }}</strong>
+            <p class="col-short-desc">{{ col.description || '' }}</p>
+            <span>{{ col.books_count || 0 }} books · {{ col.created_at | date:'mediumDate' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === 'reading'">
+      <div class="empty" *ngIf="entries.length === 0">No books tracked yet.</div>
+      <div class="entry-card" *ngFor="let entry of entries">
+        <div class="entry-top">
+          <strong class="book-link" [routerLink]="['/books', entry.book?.id]">{{ entry.book?.title }}</strong>
+          <span class="status-badge" [ngClass]="getStatusClass(entry.status)">
+            {{ entry.status | titlecase }}
+          </span>
+        </div>
+        <p class="entry-author">by {{ entry.book?.author }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" *ngIf="isCollectionModalOpen && selectedCollection" (click)="closeCollectionModal()">
+  <div class="collection-modal-card" (click)="$event.stopPropagation()">
+    <div class="collection-modal-header">
+      <div>
+        <h2>{{ selectedCollection.title }}</h2>
+        <p class="collection-modal-meta">
+          {{ selectedCollection.books_count || 0 }} books · {{ selectedCollection.created_at | date:'mediumDate' }}
+        </p>
+      </div>
+
+      <div class="collection-modal-actions">
+        <button
+          class="collection-heart-btn"
+          [class.active]="isCollectionLiked(selectedCollection.id)"
+          (click)="toggleCollectionLike($event, selectedCollection.id)">
+          {{ isCollectionLiked(selectedCollection.id) ? '♥' : '♡' }}
+        </button>
+        <button class="modal-close-btn" (click)="closeCollectionModal()">✕</button>
+      </div>
+    </div>
+
+    <div class="collection-description-block" *ngIf="selectedCollection.description">
+      <h3>Description</h3>
+      <p>{{ selectedCollection.description }}</p>
+    </div>
+
+    <div class="collection-books-block">
+      <h3>Books in this collection</h3>
+
+      <div class="collection-books-grid" *ngIf="selectedCollection.books?.length > 0; else noBooks">
+        <div class="collection-book-card" *ngFor="let book of selectedCollection.books" (click)="openBook(book.id)">
+          <div class="collection-book-cover-wrap">
+            <img *ngIf="book.cover_image; else noBookCover" [src]="book.cover_image" class="collection-book-cover">
+            <ng-template #noBookCover>
+              <div class="collection-book-cover-placeholder">📚</div>
+            </ng-template>
+          </div>
+
+          <div class="collection-book-info">
+            <strong>{{ book.title }}</strong>
+            <span>by {{ book.author }}</span>
+            <div class="mini-meta">
+              <span>{{ book.published_year || '—' }}</span>
+              <span>★ {{ book.average_rating || '—' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noBooks>
+        <div class="empty">No books in this collection.</div>
+      </ng-template>
+    </div>
+  </div>
+</div>

@@ -7,10 +7,11 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=150)
     total_pages = models.PositiveIntegerField()
-    genre = models.CharField(max_length=100)
+    genre = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     published_year = models.PositiveIntegerField(null=True, blank=True)
     cover_image = models.URLField(blank=True)
+    read_link = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def average_rating(self):
@@ -37,6 +38,7 @@ class ReadingEntry(models.Model):
     started_at = models.DateField(null=True, blank=True)
     finished_at = models.DateField(null=True, blank=True)
     rating = models.IntegerField(default=0)
+    comment = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.book.title} ({self.status})"
@@ -57,7 +59,7 @@ class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
     rating = models.PositiveIntegerField()
-    comment = models.TextField()
+    comment = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

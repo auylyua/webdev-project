@@ -3,11 +3,13 @@
     <div class="avatar-large">{{ username.charAt(0) || 'U' }}</div>
     <div class="user-info">
       <h2>{{ username }}</h2>
+
       <div class="bio-container">
         <div *ngIf="!isEditingBio" (click)="toggleEdit()" class="bio-display">
           <p class="user-bio">{{ bio || 'i am ' + username }}</p>
           <span class="edit-hint">Click to edit bio</span>
         </div>
+
         <div *ngIf="isEditingBio" class="bio-edit-form">
           <textarea [(ngModel)]="bio" class="bio-input" rows="3"></textarea>
           <div class="bio-actions">
@@ -25,21 +27,25 @@
         <h3>My Notes 📝</h3>
         <button class="btn-action" (click)="openNoteModal()">Add Note</button>
       </div>
+
       <div class="content-list">
         <div class="item-card" *ngFor="let note of notes">
           <div class="item-title">
             <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
               <div>
-                <strong>{{ note.book_title || 'Book' }}</strong> 
+                <strong class="book-link" [routerLink]="['/books', note.book]">{{ note.book_title || 'Book' }}</strong>
                 <span class="page-tag">(p. {{ note.page_number }})</span>
               </div>
-              <button (click)="deleteNote(note.id)" style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">
+              <button
+                (click)="deleteNote(note.id)"
+                style="background: none; border: none; cursor: pointer; font-size: 1.2rem;">
                 🗑️
               </button>
             </div>
           </div>
-          <p class="item-text">{{ note.content }}</p>
+          <p class="item-text">{{ note.text }}</p>
         </div>
+
         <div *ngIf="notes.length === 0" class="empty-state">
           No notes found.
         </div>
@@ -47,94 +53,289 @@
     </section>
 
     <section class="profile-section">
-  <div class="section-header">
-    <h3>My Reviews ⭐</h3>
-    <button class="btn-action" (click)="openReviewModal()">Add Review</button>
-  </div>
-  <div class="content-list">
-    <div class="item-card" *ngFor="let review of reviews">
-      <div class="item-title">
-        <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
-          <strong>{{ review.book_title }}</strong>
-          
-          <button (click)="deleteReview(review.id)" 
-                  style="background: none; border: none; cursor: pointer; font-size: 1.2rem; opacity: 0.6;">
-            🗑️
-          </button>
+      <div class="section-header">
+        <h3>My Reviews ⭐</h3>
+        <button class="btn-action" (click)="openReviewModal()">Add Review</button>
+      </div>
+
+      <div class="content-list">
+        <div class="item-card" *ngFor="let review of reviews">
+          <div class="item-title">
+            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+              <strong class="book-link" [routerLink]="['/books', review.book]">{{ review.book_title }}</strong>
+              <button
+                (click)="deleteReview(review.id)"
+                style="background: none; border: none; cursor: pointer; font-size: 1.2rem; opacity: 0.6;">
+                🗑️
+              </button>
+            </div>
+          </div>
+          <div class="rating-badge">{{ review.rating }}/5 ★</div>
+          <p class="item-text">{{ review.comment }}</p>
+        </div>
+
+        <div *ngIf="reviews.length === 0" class="empty-state">
+          No reviews found.
         </div>
       </div>
-      <div class="rating-badge">{{ review.rating }}/5 ★</div>
-      <p class="item-text">{{ review.comment }}</p>
-    </div>
-
-    <div *ngIf="reviews.length === 0" class="empty-state">
-      No reviews found.
-    </div>
+    </section>
   </div>
-</section>
+
+  <div class="profile-grid second-grid">
+    <section class="profile-section">
+      <div class="section-header">
+        <h3>Currently Reading 📖</h3>
+      </div>
+
+      <div class="content-list">
+        <div class="item-card" *ngFor="let entry of getReadingNow()">
+          <div class="item-title">
+            <strong class="book-link" [routerLink]="['/books', entry.book]">{{ entry.book_title }}</strong>
+          </div>
+          <p class="item-text">Page {{ entry.current_page }} / {{ entry.total_pages }}</p>
+          <span class="status-chip reading">{{ entry.status }}</span>
+        </div>
+
+        <div *ngIf="getReadingNow().length === 0" class="empty-state">
+          No active books.
+        </div>
+      </div>
+    </section>
+
+    <section class="profile-section">
+      <div class="section-header">
+        <h3>Finished Books ✅</h3>
+      </div>
+
+      <div class="content-list">
+        <div class="item-card" *ngFor="let entry of getFinishedBooks()">
+          <div class="item-title">
+            <strong class="book-link" [routerLink]="['/books', entry.book]">{{ entry.book_title }}</strong>
+          </div>
+          <p class="item-text">Completed</p>
+          <span class="rating-badge">{{ entry.rating || 0 }}/10</span>
+        </div>
+
+        <div *ngIf="getFinishedBooks().length === 0" class="empty-state">
+          No finished books.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="profile-grid second-grid">
+    <section class="profile-section full-width">
+      <div class="section-header">
+        <h3>My Collections 📚</h3>
+        <button class="btn-action" (click)="openCollectionModal()">+ New Collection</button>
+      </div>
+
+      <div *ngIf="collections.length === 0" class="empty-state">No collections yet.</div>
+
+      <div class="collections-row">
+        <div class="col-card" *ngFor="let col of collections" (click)="openCollectionPreview(col)">
+          <div class="col-covers">
+            <ng-container *ngIf="getCoverImages(col).length > 0; else noCovers">
+              <img
+                *ngFor="let img of getCoverImages(col); let i = index"
+                [src]="img"
+                class="col-cover"
+                [style.z-index]="getCoverImages(col).length - i"
+                [style.transform]="'rotate(' + (i * 6 - 6) + 'deg) translateX(' + (i * 14 - 14) + 'px)'">
+            </ng-container>
+            <ng-template #noCovers>
+              <div class="col-cover-placeholder">📚</div>
+            </ng-template>
+          </div>
+
+          <div class="col-info">
+            <strong>{{ col.title }}</strong>
+            <span>{{ col.books_count || 0 }} books</span>
+          </div>
+
+          <button class="col-delete-btn" (click)="deleteCollection(col.id); $event.stopPropagation()">🗑️</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <div class="modal-overlay" *ngIf="isNoteModalOpen">
     <div class="modal-card">
       <h3>New Reading Note 📝</h3>
+
       <div class="form-group">
         <label>Book Title</label>
         <select [(ngModel)]="newNote.book" class="book-select">
-  <option value="" disabled selected>Select a book</option>
-  <option *ngFor="let entry of userBooks" [value]="entry.book">
-    {{ entry.book_title }}
-  </option>
-</select>
+          <option value="" disabled selected>Select a book</option>
+          <option *ngFor="let entry of userBooks" [value]="entry.book">
+            {{ entry.book_title }}
+          </option>
+        </select>
       </div>
+
       <div class="form-group">
-  <label>Page Number</label>
-  <input 
-    type="number" 
-    [(ngModel)]="newNote.page_number" 
-    placeholder="Type page..."
-    class="page-input"
-    autocomplete="one-time-code"
-    name="page_number_{{username}}"
-    id="page_input_field"
-    readonly 
-    onfocus="this.removeAttribute('readonly');">
-</div>
+        <label>Page Number</label>
+        <input
+          type="number"
+          [(ngModel)]="newNote.page_number"
+          placeholder="Type page..."
+          class="page-input"
+          autocomplete="one-time-code"
+          name="page_number_{{username}}"
+          id="page_input_field"
+          readonly
+          onfocus="this.removeAttribute('readonly');">
+      </div>
+
       <div class="form-group">
         <label>Note Content</label>
         <textarea [(ngModel)]="newNote.text" placeholder="Your thoughts..."></textarea>
       </div>
+
       <div class="modal-actions">
         <button class="btn-save" (click)="saveNote()">Save Note</button>
         <button class="btn-cancel" (click)="closeNoteModal()">Cancel</button>
       </div>
     </div>
   </div>
-</div>
 
-<div class="modal-overlay" *ngIf="isReviewModalOpen">
-  <div class="modal-card">
-    <h3>New Review ⭐</h3>
-    <div class="form-group">
-      <label>Book</label>
-      <select [(ngModel)]="newReview.book" class="book-select">
-        <option value="" disabled selected>Select a book</option>
-        <option *ngFor="let entry of userBooks" [value]="entry.book">
-          {{ entry.book_title }}
-        </option>
-      </select>
+  <div class="modal-overlay" *ngIf="isReviewModalOpen">
+    <div class="modal-card">
+      <h3>New Review ⭐</h3>
+
+      <div class="form-group">
+        <label>Book</label>
+        <select [(ngModel)]="newReview.book" class="book-select">
+          <option value="" disabled selected>Select a book</option>
+          <option *ngFor="let entry of userBooks" [value]="entry.book">
+            {{ entry.book_title }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Rating (1-5)</label>
+        <input type="number" [(ngModel)]="newReview.rating" min="1" max="5">
+      </div>
+
+      <div class="form-group">
+        <label>Comment</label>
+        <textarea [(ngModel)]="newReview.comment" placeholder="What did you think?"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-save" (click)="saveReview()">Save Review</button>
+        <button class="btn-cancel" (click)="isReviewModalOpen = false">Cancel</button>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Rating (1-5)</label>
-      <input type="number" [(ngModel)]="newReview.rating" min="1" max="5">
+  </div>
+
+  <div class="modal-overlay" *ngIf="isCollectionModalOpen" (click)="closeCollectionModal()">
+    <div class="modal-card collection-modal" (click)="$event.stopPropagation()">
+      <h3>New Collection 📚</h3>
+
+      <div class="form-group">
+        <label>Title *</label>
+        <input type="text" [(ngModel)]="newCollection.title" placeholder="e.g. Unexpected endings">
+      </div>
+
+      <div class="form-group">
+        <label>Description</label>
+        <textarea [(ngModel)]="newCollection.description" placeholder="What is this collection about?"></textarea>
+      </div>
+
+      <div class="form-group" style="flex-direction: row; align-items: center; gap: 10px;">
+        <input type="checkbox" [(ngModel)]="newCollection.is_public" id="colPubCheck">
+        <label for="colPubCheck" style="margin: 0; font-weight: 500; font-size: 14px;">Public collection</label>
+      </div>
+
+      <div class="form-group">
+        <label>Add Books</label>
+        <input
+          type="text"
+          [(ngModel)]="bookSearch"
+          (ngModelChange)="searchBooks()"
+          placeholder="Search by title or author...">
+
+        <div class="book-search-list">
+          <div
+            *ngFor="let book of filteredBooks"
+            class="book-search-item"
+            [class.selected]="isSelected(book)"
+            (click)="toggleBook(book)">
+            <img *ngIf="book.cover_image" [src]="book.cover_image" class="search-thumb">
+            <div *ngIf="!book.cover_image" class="search-thumb-placeholder">📚</div>
+            <div class="book-search-info">
+              <strong>{{ book.title }}</strong>
+              <span>{{ book.author }}</span>
+            </div>
+            <span *ngIf="isSelected(book)" class="check-mark">✓</span>
+          </div>
+
+          <div *ngIf="filteredBooks.length === 0" class="empty-state" style="padding: 20px 0;">
+            No books found.
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="selectedBooks.length > 0" class="selected-chips">
+        <span *ngFor="let b of selectedBooks" class="chip">
+          {{ b.title }}
+          <button (click)="toggleBook(b)">✕</button>
+        </span>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-save" (click)="saveCollection()">Create</button>
+        <button class="btn-cancel" (click)="closeCollectionModal()">Cancel</button>
+      </div>
     </div>
-    <div class="form-group">
-      <label>Comment</label>
-      <textarea [(ngModel)]="newReview.comment" placeholder="What did you think?"></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-save" (click)="saveReview()">Save Review</button>
-      <button class="btn-cancel" (click)="isReviewModalOpen = false">Cancel</button>
+  </div>
+
+  <div class="modal-overlay" *ngIf="isCollectionPreviewOpen && selectedCollection" (click)="closeCollectionPreview()">
+    <div class="collection-preview-modal" (click)="$event.stopPropagation()">
+      <div class="collection-preview-header">
+        <div>
+          <h2>{{ selectedCollection.title }}</h2>
+          <p class="collection-preview-meta">
+            {{ selectedCollection.books_count || 0 }} books · {{ selectedCollection.created_at | date:'mediumDate' }}
+          </p>
+        </div>
+        <button class="preview-close-btn" (click)="closeCollectionPreview()">✕</button>
+      </div>
+
+      <div class="collection-preview-description" *ngIf="selectedCollection.description">
+        <h3>Description</h3>
+        <p>{{ selectedCollection.description }}</p>
+      </div>
+
+      <div class="collection-preview-books">
+        <h3>Books in this collection</h3>
+
+        <div class="collection-preview-grid" *ngIf="selectedCollection.books?.length > 0; else noPreviewBooks">
+          <div class="preview-book-card" *ngFor="let book of selectedCollection.books" (click)="openBook(book.id)">
+            <div class="preview-book-cover-wrap">
+              <img *ngIf="book.cover_image; else noPreviewCover" [src]="book.cover_image" class="preview-book-cover">
+              <ng-template #noPreviewCover>
+                <div class="preview-book-cover-placeholder">📚</div>
+              </ng-template>
+            </div>
+
+            <div class="preview-book-info">
+              <strong>{{ book.title }}</strong>
+              <span>by {{ book.author }}</span>
+              <div class="preview-mini-meta">
+                <span>{{ book.published_year || '—' }}</span>
+                <span>★ {{ book.average_rating || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noPreviewBooks>
+          <div class="empty-state">No books in this collection.</div>
+        </ng-template>
+      </div>
     </div>
   </div>
 </div>
-
